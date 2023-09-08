@@ -1,18 +1,23 @@
-node_modules
-dist
-.idea
-.eslintrc-auto-import.json
-storage/*
-.env
-.env.local
-/storage/
-/src/@iconify/icons-bundle.js
-/node_modules 
-/yarn.lock
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-/package-lock.json
-package-lock.json
-auto-imports.d.ts
-components.d.ts
-yarn.lock
-icons-bundle.js
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# production
+/build
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

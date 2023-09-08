@@ -7,11 +7,17 @@ storage/*
 .env.local
 /storage/
 /src/@iconify/icons-bundle.js
-/node_modules 
+
 /yarn.lock
+
+/dist
+dist
+node_modules
+/node_modules 
 
 /package-lock.json
 package-lock.json
+
 auto-imports.d.ts
 components.d.ts
 yarn.lock
