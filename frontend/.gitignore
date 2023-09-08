@@ -3,7 +3,6 @@ dist
 .idea
 .eslintrc-auto-import.json
 storage/*
-.env
 .env.local
 /storage/
 /src/@iconify/icons-bundle.js
