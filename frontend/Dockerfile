@@ -9,6 +9,6 @@ COPY /dist /myweb/
 # RUN npm run build
 # production environment
 FROM nginx:stable-alpine
-COPY --from=build /myweb/ /usr/share/nginx/html
+COPY --from=dist /myweb/ /usr/share/nginx/html
 EXPOSE 80 8080
 CMD ["nginx", "-g", "daemon off;"]
