@@ -4,11 +4,11 @@ FROM node:13.12.0-alpine as build
 RUN mkdir myweb
 WORKDIR /myweb
 
-COPY /dist /myweb/ 
+COPY /build /myweb/ 
 # RUN npm install
 # RUN npm run build
 # production environment
 FROM nginx:stable-alpine
-COPY --from=dist /myweb/ /usr/share/nginx/html
+COPY --from=build /myweb/ /usr/share/nginx/html
 EXPOSE 80 8080
 CMD ["nginx", "-g", "daemon off;"]
