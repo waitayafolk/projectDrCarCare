@@ -29,9 +29,11 @@ const usersInstance = axios.create({
 });
 
 const Login = async()=>{
+  let user_id = new URL(window.location).search.split('?user_id=')[1]
   let body = {
     mobile : mobile.value ,
-    name : name.value
+    name : name.value,
+    user_id : user_id ,
   }
 
   let res = await usersInstance.post('register/' , body , {
@@ -44,7 +46,7 @@ const Login = async()=>{
     localStorage.setItem('token' , JSON.stringify(res.token))
     localStorage.setItem('user_data' , JSON.stringify(res.data))
     
-    router.push({ path: '/customer' })
+    router.push({ path: '/success' })
     Swal.fire({
       icon: 'success',
       title: 'Success',

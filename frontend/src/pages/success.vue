@@ -23,7 +23,7 @@ const Login = async()=>{
     localStorage.setItem('isLogin' , JSON.stringify(true))
     localStorage.setItem('token' , JSON.stringify(res.token))
     localStorage.setItem('user_data' , JSON.stringify(res.data))
-    router.push({ path: '/success' })
+    router.push({ path: '/customer' })
     Swal.fire({ icon: 'success', title: 'Success', text: 'Login success!',})
   }else{
     Swal.fire({ icon: 'error', title: 'เข้าสู่ระบบไม่สำเร็จ...', text: 'ไม่มีสมาชิกในระบบ!',})
@@ -37,31 +37,11 @@ const Login = async()=>{
       <VCard class="mt-12 mt-sm-0 pa-4">
         <VCardText>
           <h5 class="text-h5 font-weight-semibold mb-1">
-            เข้าสู่ระบบสมาชิก Dr.Carcare ! 👋🏻
+            ทำรายการสำเร็จ 👋🏻
           </h5>
           <p class="mb-0">
-            ระบบสมาชิก
+            Dr.Carcare
           </p>
-        </VCardText>
-        <VCardText>
-          <VForm @submit.prevent="() => {Login()}">
-            <VRow>
-              <VCol cols="12">
-                <VTextField v-model="mobile" label="เบอร์โทร" type="text" :rules="[requiredValidator]"/>
-              </VCol>
-              <VCol cols="12" class="text-center">
-                <span>ยังไม่เป็นสมาขิก ?</span>
-                <a type="button" class="text-primary ms-2" @click="router.push({ path: '/register' })">
-                  สมัครสมาขิก
-                </a>
-              </VCol>
-              <VCol cols="12">
-                <VBtn block type="submit" >
-                  เข้าสู่ระบบ
-                </VBtn>
-              </VCol>
-            </VRow>
-          </VForm>
         </VCardText>
       </VCard>
     </VCol>
