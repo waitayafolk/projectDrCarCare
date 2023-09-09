@@ -315,14 +315,14 @@ function handleEvent(event) {
 
 async function handleText(message, replyToken,userId) {
   if(message.text == 'สมัครสมาชิก'){
-    let customer = (await conpool.query(`SELECT * FROM customer WHERE line_id = ${ruserId} `, [])).rows[0]
+    let customer = (await conpool.query(`SELECT * FROM customer WHERE line_id = ${userId} `, [])).rows[0]
     if(customer.id != undefined || customer != null){
       return replyText(replyToken, `ท่านเป็นสมาชิกอยู่แล้ว คุณ${customer.name}`);
     }else{
       return replyText(replyToken, `ท่านยังไม่เป็นสมาชิก โปรลงทะเบียน : http://188.166.221.231:3388/register?user_id=${userId}`);
     }
   }else if (message.text == 'เข้าสู่ระบบ'){
-    let customer = (await conpool.query(`SELECT * FROM customer WHERE line_id = ${ruserId} `, [])).rows[0]
+    let customer = (await conpool.query(`SELECT * FROM customer WHERE line_id = ${userId} `, [])).rows[0]
     if(customer.id != undefined || customer != null){
       return replyText(replyToken, `เข้าสู่ระบบเรียบร้อย คุณ${customer.name}`);
     }else{
@@ -331,7 +331,7 @@ async function handleText(message, replyToken,userId) {
   }else if (message.text == 'ตรวจสอบสถานะรถ'){
     return replyText(replyToken, 'ยังไม่มีการฝากล้างรถ');
   }else if (message.text == 'สมาชิก'){
-    let customer = (await conpool.query(`SELECT * FROM customer WHERE line_id = ${ruserId} `, [])).rows[0]
+    let customer = (await conpool.query(`SELECT * FROM customer WHERE line_id = ${userId} `, [])).rows[0]
     if(customer.id != undefined || customer != null){
       return replyText(replyToken, `
                 รายละเอียดสมาชิก
