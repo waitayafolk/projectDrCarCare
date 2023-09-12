@@ -9,6 +9,8 @@ const secretKey = process.env.SECRET_KEY;
 const fileUpload = require("express-fileupload");
 var bcrypt = require("bcrypt");
 const nodemailer = require('nodemailer');
+var fs = require('fs');
+var https = require('https');
 
 const line = require('@line/bot-sdk');
 const config = require('./config.json');
@@ -28,6 +30,7 @@ const verifyToken = (req, res, next) => {
     }
   });
 };
+
 const admin = require("./Router/router_admins");
 const services = require("./Router/router_services");
 const customers = require("./Router/router_customers");
@@ -113,8 +116,8 @@ app.post("/register", async function (req, res) {
             throw Error(err);
         } else {  
           let data = result.rows[0]
-          if(data.id != undefined || data.id != null){
-            conpool.query(`UPDATE customer SET mobile = $1 , name = $2 , line_id = $3 WHERE id = $4 ` , 
+          if(data != undefined || data != null){
+            conpool.query(`UPDATE customer SET mobile = $1 , name = $2 , line_id = $3 , status = true WHERE id = $4 ` , 
             [req.body.mobile , req.body.name , req.body.user_id , data.id], (err, result) => {
               if (err) {
                 throw Error(err);
@@ -193,6 +196,16 @@ app.post("/login/customer", async function (req, res) {
     res.status(400).json({ status: error.message });
   }
 });
+
+// let opts = {
+//   method: 'GET',
+//   hostname: "localhost",
+//   port: 433,
+//   path: '/',
+//   ca: fs.readFileSync("ca-certificate.crt")
+// };
+
+// https.request(opts, (response) => { }).end();
 
 app.post("/chang-password", verifyToken, async(req, res) => {
   conpool.query(`UPDATE admin SET password = $1  WHERE id = $2 ` , 
@@ -315,15 +328,15 @@ function handleEvent(event) {
 
 async function handleText(message, replyToken,userId) {
   if(message.text == 'สมัครสมาชิก'){
-    let customer = (await conpool.query(`SELECT * FROM customer WHERE line_id = $1 `, [userId])).rows[0]
-    if(customer.id != undefined || customer != null){
+    let customer = (await conpool.query(`SELECT * FROM customer WHERE line_id = $1 AND status = true `, [userId])).rows[0]
+    if(customer != undefined || customer != null){
       return replyText(replyToken, `ท่านเป็นสมาชิกอยู่แล้ว คุณ${customer.name}`);
     }else{
       return replyText(replyToken, `ท่านยังไม่เป็นสมาชิก โปรลงทะเบียน : http://188.166.221.231:3388/register?user_id=${userId}`);
     }
   }else if (message.text == 'เข้าสู่ระบบ'){
-    let customer = (await conpool.query(`SELECT * FROM customer WHERE line_id = $1 `, [userId])).rows[0]
-    if(customer.id != undefined || customer != null){
+    let customer = (await conpool.query(`SELECT * FROM customer WHERE line_id = $1 AND status = true `, [userId])).rows[0]
+    if(customer != undefined || customer != null){
       return replyText(replyToken, `เข้าสู่ระบบเรียบร้อย คุณ${customer.name}`);
     }else{
       return replyText(replyToken, `ท่านยังไม่เป็นสมาชิก โปรลงทะเบียน : http://188.166.221.231:3388/register?user_id=${userId}`);
@@ -331,13 +344,13 @@ async function handleText(message, replyToken,userId) {
   }else if (message.text == 'ตรวจสอบสถานะรถ'){
     return replyText(replyToken, 'ยังไม่มีการฝากล้างรถ');
   }else if (message.text == 'สมาชิก'){
-    let customer = (await conpool.query(`SELECT * FROM customer WHERE line_id = $1 `, [userId])).rows[0]
-    if(customer.id != undefined || customer != null){
+    let customer = (await conpool.query(`SELECT * FROM customer WHERE line_id = $1 AND status = true `, [userId])).rows[0]
+    if(customer != undefined || customer != null){
       return replyText(replyToken, `
 รายละเอียดสมาชิก
 ลูกค้าชื่อ :${customer.name}
 คะแนนสะสม :${customer.point}
-เบอร์โทรติดต่อ :${customer.point}
+เบอร์โทรติดต่อ :${customer.mobile}
       `);
     }else{
       return replyText(replyToken, `ท่านยังไม่เป็นสมาชิก โปรลงทะเบียน : http://188.166.221.231:3388/register?user_id=${userId}`);
