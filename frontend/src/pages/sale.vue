@@ -1,26 +1,33 @@
 <script>
   import service from '@/plugins/axios';
+  import Swal from 'sweetalert2'
+  import { thaiDateNotime }from "@/thaiDateNotime";
   export default {
     components: {
       // useLoading
     },
     data() {
       return {
+        thaiDateNotime,
         tital : 'All the best for your new project.' ,
         customers : [] , 
         service_group : [],
         service : [] , 
         show : false ,
+        detail : false ,
+        billDetail : [],
         data : {
             customer_id : null , 
             service_group_id : null , 
             service : [] ,
-        }
+        },
+        bills : [] ,
       }
     },
     mounted() {
-      this.getDataCuctomer()
-      this.getDataServiceGroup()
+        this.getBill()
+        this.getDataCuctomer()
+        this.getDataServiceGroup()
     },
     methods: {
         async openModal(){
@@ -28,6 +35,15 @@
             this.data.service_group_id = null 
             this.data.service = []
             this.show = true
+        },
+        async getBill() {
+            await service({ method: 'get', url: '/endbill/bill', data: [], params: [] })
+            .then((response) => {
+                this.bills = response.data
+            })
+            .catch((error) => {
+                console.log(error);
+            });
         },
         async getDataCuctomer() {
             await service({ method: 'get', url: '/customers', data: [], params: [] })
@@ -57,13 +73,57 @@
             });
         },
         async choose(item){
-            this.data.service.push({
-                id : item.id , 
-                price : item.price ,
-                discount : 0,
-                name : item.title 
+            let index = this.data.service.findIndex(data => data.id === item.id);
+            if(index == -1){
+                this.data.service.push({
+                    id : item.id , 
+                    price : item.price ,
+                    discount : 0,
+                    name : item.title 
+                })
+            }
+        },
+        async deleteArray (item){
+            let index = this.data.service.findIndex(data => data.id === item.id);
+            if(index > -1){
+                this.data.service.splice(index, 1);
+            }
+        },  
+        async saveDate (){
+            await service({ method: 'post', url: `/endbill`, data: this.data , params: [] })
+            .then((response) => {
+                if(response.status == "success"){
+                    Swal.fire({ icon: 'success', title: 'รับรถสำเร็จ', text: 'รับรถรอล้างสำเร็จแล้ว !',})
+                    this.show = false
+                    this.getBill()
+                }else{
+                    Swal.fire({ icon: 'error', title: 'รับรถไม่สำเร็จ', text: 'กรุณาลองใหม่อีกครั้ง !',})
+                    this.show = false
+                }
             })
-            // console.log(item)
+            .catch((error) => {
+                console.log(error);
+            });
+        },
+        async updatePercen(percen , bill_id){
+            let data = {
+                percen : percen , 
+                bill_id : bill_id
+            }
+            await service({ method: 'post', url: `/endbill/update`, data: data, params: [] })
+            .then((response) => {
+                if(response.status == "success"){
+                    Swal.fire({ icon: 'success', title: 'อัพเดทสำเร็จ', text: 'อัพเดทสถานะสำเร็จ !',})
+                    this.show = false
+                    this.getBill()
+                }else{
+                    Swal.fire({ icon: 'error', title: 'อัพเดทไม่สำเร็จ', text: 'กรุณาลองใหม่อีกครั้ง !',})
+                    this.show = false
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            });
         }
     }
   }
@@ -86,48 +146,55 @@
             <VTable fixed-header density="compact" class="text-no-wrap">
                 <thead>
                     <tr>
-                        <th style="text-align: start;">id</th>
+                        <!-- <th style="text-align: start;">id</th> -->
+                        <th style="text-align: start;">สำเร็จ</th>
+                        <th style="text-align: start;">ประเภท</th>
                         <th style="text-align: start;">ลูกค้า</th>
                         <th style="text-align: start;">เบอร์โทรลูกค้า</th>
                         <th style="text-align: start;">แอดมินผู้รับผิดชอบ</th>
                         <th style="text-align: end;">ค่าบริการ</th>
                         <th style="text-align: end;">ส่วนลด</th>
                         <th style="text-align: end;">รวม</th>
+                        <th style="text-align: center;">สถานะ</th>
                         <th style="text-align: center;">วันที่รับรถ</th>
                         <th style="text-align: center;">รายการ</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- <tr v-for="item of admins">
-                        <td style="text-align: start;">{{ item.username }}</td>
-                        <td style="text-align: start;">{{ item.code }}</td>
-                        <td style="text-align: start;">{{ item.name }}</td>
+                    <tr v-for="item of bills">
+                        <!-- <td style="text-align: start;">{{ item.id }}</td> -->
+                        <td style="text-align: start;">{{ item.percen }} %</td>
+                        <td style="text-align: start;">{{ item.name_service }}</td>
+                        <td style="text-align: start;">{{ item.name_customer }}</td>
+                        <td style="text-align: start;">{{ item.mobile }}</td>
+                        <td style="text-align: start;">{{ item.name_admin }}</td>
+                        <td style="text-align: end;">{{ item.price }}</td>
+                        <td style="text-align: end;">{{ item.discount }}</td>
+                        <td style="text-align: end;">{{ item.total }}</td>
+                        <th style="text-align: center;">
+                            <div v-if="item.status == 'success'"><VChip color="success">เสร็จแล้ว</VChip></div>
+                            <div v-if="item.status == 'wait'"><VChip color="warning">กำลังล้าง</VChip></div>
+                        </th>
                         <td style="text-align: center;">
-                            <div style="color: orange;" v-if="item.role == 1"><VIcon start color="warning" icon="tabler-star-filled"/>เจ้าของ</div>
-                            <div v-if="item.role == 2">พนักงาน</div>
+                            {{ thaiDateNotime(item.created_date) }}
                         </td>
                         <td style="text-align: center;">
-                            <div v-if="item.status == true"><VChip color="success">เปิด</VChip></div>
-                            <div v-if="item.status == false"><VChip color="error">ระงับการใช้งาน</VChip></div>
+                            <td>
+                                <VBtn size="x-small" color="primary" @click="detail = true; billDetail = item.detail " block class="mt-1">
+                                    รายการ
+                                </VBtn>
+                                <VBtn :disabled="item.percen == 100 ? true : false" size="x-small" color="info" @click="updatePercen(30 , item.id)" block class="mt-1">
+                                    สำเร็จ 30%
+                                </VBtn>
+                                <VBtn :disabled="item.percen == 100 ? true : false" size="x-small" color="info" @click="updatePercen(100 , item.id)" block class="mt-1">
+                                    สำเร็จ 100%
+                                </VBtn>
+                                <VBtn size="x-small" color="success" @click="openDeposit(item)" block class="mt-1">
+                                    บิล
+                                </VBtn>
+                            </td>
                         </td>
-                        <td style="text-align: center;">
-                            {{ thaiDateNotime(item.create_date) }}
-                        </td>
-                        <td style="text-align: center;">
-                            <VRow>
-                                <VCol cols="6" md="6">
-                                    <VBtn size="small" color="primary" @click="show = true , admin = item">
-                                        <VIcon start icon="tabler-edit"/> แก้ไข
-                                    </VBtn>
-                                </VCol>
-                                <VCol cols="6" md="6">
-                                    <VBtn size="small" color="primary" @click="showPassword = true , changPass.id = item.id">
-                                        <VIcon start icon="tabler-edit"/> เปลี่ยนรหัสผ่าน
-                                    </VBtn>
-                                </VCol>
-                            </VRow>
-                        </td>
-                    </tr> -->
+                    </tr>
                 </tbody>
             </VTable>
         </VCardText>
@@ -180,14 +247,20 @@
                                     บริการ : {{ item.name }}
                                     <!-- <VTextField :disabled="true" type="text" v-model="item.name" label="บริการ" /> -->
                                 </VCol>
-                                <VCol cols="3" md="3">
+                                <VCol cols="2" md="2">
                                     <VTextField type="number" v-model="item.price" label="ค่าบริการ" />
                                 </VCol>
-                                <VCol cols="3" md="3">
+                                <VCol cols="2" md="2">
                                     <VTextField type="number" v-model="item.discount" label="ส่วนลด" />
                                 </VCol>
                                 <VCol style="padding: 15px;" cols="3" md="3">
                                     รวม : {{ item.price -  item.discount}}
+                                </VCol>
+                                <VCol cols="1" md="1">
+                                    <VBtn variant="tonal" color="error" @click="deleteArray(item)">
+                                        ลบ
+                                    </VBtn>   
+                                    <!-- <VTextField type="number" v-model="item.discount" label="ส่วนลด" /> -->
                                 </VCol>
                             </VRow>
                             
@@ -198,9 +271,42 @@
                     <VBtn variant="tonal" color="secondary" @click="show = false">
                         ปิด
                     </VBtn>
-                    <VBtn color="primary">
-                        <!-- @click="saveDataPassword()" -->
+                    <VBtn color="primary" @click="saveDate()">
                         บันทึกข้อมูล
+                    </VBtn>
+                </VCardText>
+            </VCard>
+        </VDialog>
+        <VDialog v-model="detail" max-width="800">
+            <DialogCloseBtn @click="detail = false" />
+            <VCard>
+                <VCardTitle>
+                    รายการ
+                </VCardTitle>
+                <VCardText>
+                    <VTable fixed-header density="compact" class="text-no-wrap">
+                        <thead>
+                            <tr>
+                                <!-- <th style="text-align: start;">id</th> -->
+                                <th style="text-align: start;">รายการ</th>
+                                <th style="text-align: end;">ราคา</th>
+                                <th style="text-align: end;">ส่วนลด</th>
+                                <th style="text-align: end;">รวม</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="item of billDetail">
+                                <td style="text-align: start;">{{ item.title }} </td>
+                                <td style="text-align: end;">{{ item.price }}</td>
+                                <td style="text-align: end;">{{ item.discount }}</td>
+                                <td style="text-align: end;">{{ item.total }}</td>
+                            </tr>
+                        </tbody>
+                    </VTable>
+                </VCardText>
+                <VCardText class="d-flex justify-end flex-wrap gap-3">
+                    <VBtn variant="tonal" color="secondary" @click="detail = false">
+                        ปิด
                     </VBtn>
                 </VCardText>
             </VCard>

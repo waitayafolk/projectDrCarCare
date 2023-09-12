@@ -25,7 +25,7 @@ export default {
             show : false ,
             admin : {
                 id : 0 , 
-                role : 1 , 
+                role : 'admin' , 
                 name : '' ,
                 username : '' , 
                 password : '' ,
@@ -169,12 +169,12 @@ export default {
                         <td style="text-align: start;">{{ item.code }}</td>
                         <td style="text-align: start;">{{ item.name }}</td>
                         <td style="text-align: center;">
-                            <div style="color: orange;" v-if="item.role == 1"><VIcon start color="warning" icon="tabler-star-filled"/>เจ้าของ</div>
-                            <div v-if="item.role == 2">พนักงาน</div>
+                            <div style="color: orange;" v-if="item.role == 'admin'"><VIcon start color="warning" icon="tabler-star-filled"/>เจ้าของ</div>
+                            <div v-if="item.role != 'admin'">พนักงาน</div>
                         </td>
                         <td style="text-align: center;">
-                            <div v-if="item.status == true"><VChip color="success">เปิด</VChip></div>
-                            <div v-if="item.status == false"><VChip color="error">ระงับการใช้งาน</VChip></div>
+                            <div v-if="item.status == 'use'"><VChip color="success">เปิด</VChip></div>
+                            <!-- <div v-if="item.status == false"><VChip color="error">ระงับการใช้งาน</VChip></div> -->
                         </td>
                         <td style="text-align: center;">
                             {{ thaiDateNotime(item.create_date) }}
@@ -215,8 +215,8 @@ export default {
                     <VRow>
                         <VCol cols="12" md="12">
                             <VSelect v-model="admin.role" :items="[
-                                {name : 'ผู้จัดการ' , value : 1 } , 
-                                {name : 'พนักงาน' , value : 2 }
+                                {name : 'ผู้จัดการ' , value : 'admin' } , 
+                                {name : 'พนักงาน' , value : 'employee' }
                                 ]" item-title="name" item-value="value" label="ระดับการใช้งาน" persistent-hint/>
                         </VCol>
                         <VCol cols="6" md="6">
@@ -229,11 +229,11 @@ export default {
                             <VTextField type="text" v-model="admin.username" label="Username" />
                         </VCol>
                         <VCol cols="6" md="6">
-                            <VTextField :disabled="id != 0 ? true : false" type="password" v-model="admin.password" label="Password" />
+                            <VTextField type="password" v-model="admin.password" label="Password" />
                         </VCol>
-                        <VCol cols="12" md="12">
+                        <!-- <VCol cols="12" md="12">
                            <VSwitch v-model="admin.status" label="สถานะ"/>
-                        </VCol>
+                        </VCol> -->
                     </VRow>
                 </VCardText>
                 <VCardText class="d-flex justify-end flex-wrap gap-3">

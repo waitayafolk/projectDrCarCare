@@ -35,7 +35,7 @@ const admin = require("./Router/router_admins");
 const services = require("./Router/router_services");
 const customers = require("./Router/router_customers");
 const company = require("./Router/router_company");
-
+const endbill = require("./Router/router_endbill");
 app.use("/upload", express.static("upload"));
 app.use("/upload/logo", express.static("upload/logo"));
 
@@ -48,6 +48,8 @@ app.use("/admins", verifyToken , admin);
 app.use("/services", verifyToken , services);
 app.use("/customers", verifyToken , customers);
 app.use("/company", verifyToken , company);
+app.use("/endbill", verifyToken , endbill);
+
 
 app.get("/", function (req, res) {
   res.send("Api It Working !");
@@ -56,7 +58,7 @@ app.get("/", function (req, res) {
 app.post("/login", async function (req, res) {
   try{
     conpool.query(
-      `SELECT * FROM admin WHERE username = ($1) `,
+      `SELECT * FROM admin WHERE username = ($1) AND status ='use'`,
       [req.body.username],
       async (err, result) => {
         if (err) {
@@ -67,12 +69,6 @@ app.post("/login", async function (req, res) {
             // return
             
             if (admin) {
-              if(admin.status == false){
-                return res.status(401).json({
-                  status: "error",
-                  message: "บัญชีถูกระงับการใช้งาน",
-                });
-              }
               let password = await bcrypt.compareSync(req.body.password, admin.password)
               if (password) {
                 let payload = {
@@ -117,7 +113,7 @@ app.post("/register", async function (req, res) {
         } else {  
           let data = result.rows[0]
           if(data != undefined || data != null){
-            conpool.query(`UPDATE customer SET mobile = $1 , name = $2 , line_id = $3 , status = true WHERE id = $4 ` , 
+            conpool.query(`UPDATE customer SET mobile = $1 , name = $2 , line_id = $3 , status = 'use' WHERE id = $4 ` , 
             [req.body.mobile , req.body.name , req.body.user_id , data.id], (err, result) => {
               if (err) {
                 throw Error(err);
@@ -131,7 +127,7 @@ app.post("/register", async function (req, res) {
           }else{
             conpool.query(`INSERT INTO customer ( mobile , name , status , create_date ,line_id   ) 
             VALUES ($1 , $2 , $3  , $4 , $5 ) ` , 
-            [req.body.mobile , req.body.name ,  req.body.status ,  new Date() , req.body.user_id], (err, result) => {
+            [req.body.mobile , req.body.name ,  'use' ,  new Date() , req.body.user_id], (err, result) => {
                 if (err) {
                     throw Error(err);
                 } else {
@@ -142,9 +138,6 @@ app.post("/register", async function (req, res) {
                 }
             });
           }
-          console.log(result.rows[0])
-          // console.log(req.body)
-          return
         }
       }
     )
@@ -327,35 +320,39 @@ function handleEvent(event) {
 }
 
 async function handleText(message, replyToken,userId) {
-  if(message.text == 'สมัครสมาชิก'){
+  if(message.text == 'ล้างเลย'){
     let customer = (await conpool.query(`SELECT * FROM customer WHERE line_id = $1 AND status = true `, [userId])).rows[0]
-    if(customer != undefined || customer != null){
-      return replyText(replyToken, `ท่านเป็นสมาชิกอยู่แล้ว คุณ${customer.name}`);
-    }else{
-      return replyText(replyToken, `ท่านยังไม่เป็นสมาชิก โปรลงทะเบียน : http://188.166.221.231:3388/register?user_id=${userId}`);
-    }
-  }else if (message.text == 'เข้าสู่ระบบ'){
-    let customer = (await conpool.query(`SELECT * FROM customer WHERE line_id = $1 AND status = true `, [userId])).rows[0]
-    if(customer != undefined || customer != null){
-      return replyText(replyToken, `เข้าสู่ระบบเรียบร้อย คุณ${customer.name}`);
-    }else{
-      return replyText(replyToken, `ท่านยังไม่เป็นสมาชิก โปรลงทะเบียน : http://188.166.221.231:3388/register?user_id=${userId}`);
-    }
-  }else if (message.text == 'ตรวจสอบสถานะรถ'){
-    return replyText(replyToken, 'ยังไม่มีการฝากล้างรถ');
-  }else if (message.text == 'สมาชิก'){
-    let customer = (await conpool.query(`SELECT * FROM customer WHERE line_id = $1 AND status = true `, [userId])).rows[0]
-    if(customer != undefined || customer != null){
-      return replyText(replyToken, `
-รายละเอียดสมาชิก
-ลูกค้าชื่อ :${customer.name}
-คะแนนสะสม :${customer.point}
-เบอร์โทรติดต่อ :${customer.mobile}
-      `);
-    }else{
-      return replyText(replyToken, `ท่านยังไม่เป็นสมาชิก โปรลงทะเบียน : http://188.166.221.231:3388/register?user_id=${userId}`);
-    }
+    console.log(customer)
   }
+//   if(message.text == 'สมัครสมาชิก'){
+//     let customer = (await conpool.query(`SELECT * FROM customer WHERE line_id = $1 AND status = true `, [userId])).rows[0]
+//     if(customer != undefined || customer != null){
+//       return replyText(replyToken, `ท่านเป็นสมาชิกอยู่แล้ว คุณ${customer.name}`);
+//     }else{
+//       return replyText(replyToken, `ท่านยังไม่เป็นสมาชิก โปรลงทะเบียน : http://188.166.221.231:3388/register?user_id=${userId}`);
+//     }
+//   }else if (message.text == 'เข้าสู่ระบบ'){
+//     let customer = (await conpool.query(`SELECT * FROM customer WHERE line_id = $1 AND status = true `, [userId])).rows[0]
+//     if(customer != undefined || customer != null){
+//       return replyText(replyToken, `เข้าสู่ระบบเรียบร้อย คุณ${customer.name}`);
+//     }else{
+//       return replyText(replyToken, `ท่านยังไม่เป็นสมาชิก โปรลงทะเบียน : http://188.166.221.231:3388/register?user_id=${userId}`);
+//     }
+//   }else if (message.text == 'ตรวจสอบสถานะรถ'){
+//     return replyText(replyToken, 'ยังไม่มีการฝากล้างรถ');
+//   }else if (message.text == 'สมาชิก'){
+//     let customer = (await conpool.query(`SELECT * FROM customer WHERE line_id = $1 AND status = true `, [userId])).rows[0]
+//     if(customer != undefined || customer != null){
+//       return replyText(replyToken, `
+// รายละเอียดสมาชิก
+// ลูกค้าชื่อ :${customer.name}
+// คะแนนสะสม :${customer.point}
+// เบอร์โทรติดต่อ :${customer.mobile}
+//       `);
+//     }else{
+//       return replyText(replyToken, `ท่านยังไม่เป็นสมาชิก โปรลงทะเบียน : http://188.166.221.231:3388/register?user_id=${userId}`);
+//     }
+//   }
 }
 
 function handleImage(message, replyToken) {

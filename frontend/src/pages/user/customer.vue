@@ -121,8 +121,8 @@ export default {
                         <td style="text-align: start;">{{ item.mobile }}</td>
                         <td style="text-align: start;">{{ item.name }}</td>
                         <td style="text-align: center;">
-                            <div v-if="item.status == true"><VChip color="success">ใช้งาน</VChip></div>
-                            <div v-if="item.status == false"><VChip color="error">ไม่ใช้งาน</VChip></div>
+                            <div v-if="item.status == 'use'"><VChip color="success">ใช้งาน</VChip></div>
+                            <div v-if="item.status != 'use'"><VChip color="error">ไม่ใช้งาน</VChip></div>
                         </td>
                         <td style="text-align: center;">
                             {{ thaiDateNotime(item.create_date) }}
@@ -150,9 +150,9 @@ export default {
                         <VCol cols="6" md="6">
                             <VTextField type="text" v-model="customer.name" label="ชื่อ" />
                         </VCol>
-                        <VCol cols="12" md="12">
+                        <!-- <VCol cols="12" md="12">
                            <VSwitch v-model="customer.status" label="สถานะ"/>
-                        </VCol>
+                        </VCol> -->
                     </VRow>
                 </VCardText>
                 <VCardText class="d-flex justify-end flex-wrap gap-3">

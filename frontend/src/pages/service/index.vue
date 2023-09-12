@@ -184,8 +184,8 @@ export default {
                         <td style="text-align: start;">{{ item.detail }}</td>
                         <td style="text-align: start;">{{ item.price }}</td>
                         <td style="text-align: center;">
-                            <div v-if="item.status == true"><VChip color="success">ใช้งาน</VChip></div>
-                            <div v-if="item.status == false"><VChip color="error">ไม่ใช้งาน</VChip></div>
+                            <div v-if="item.status == 'use'"><VChip color="success">ใช้งาน</VChip></div>
+                            <!-- <div v-if="item.status == false"><VChip color="error">ไม่ใช้งาน</VChip></div> -->
                         </td>
                         <td style="text-align: center;">
                             {{ thaiDateNotime(item.create_date) }}
