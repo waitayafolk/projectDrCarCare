@@ -265,7 +265,13 @@ const replyText = (token, texts) => {
     token,
     texts.map((text) => ({ type: 'text', text }))
   );
-  
+};
+const replyTemplate = (token, texts) => {
+  texts = Array.isArray(texts) ? texts : [texts];
+  return client.replyMessage(
+    token,
+    texts
+  );
 };
 
 // callback function to handle a single event
@@ -321,8 +327,34 @@ function handleEvent(event) {
 
 async function handleText(message, replyToken,userId) {
   if(message.text == 'ล้างเลย'){
-    let customer = (await conpool.query(`SELECT * FROM customer WHERE line_id = $1 AND status = true `, [userId])).rows[0]
-    console.log(customer)
+    let customer = (await conpool.query(`SELECT * FROM customer WHERE line_id = $1 AND status = 'use' `, [userId])).rows[0]
+    if(customer == undefined){
+      const message = {
+        "type": "template",
+        "altText": "This is a buttons template",
+        "template": {
+          "type": "buttons",
+          "imageAspectRatio": "rectangle",
+          "imageSize": "cover",
+          "imageBackgroundColor": "#FFFFFF",
+          "title": "สมัครมาชิก",
+          "text": "คลิกสมัครสมาชิก",
+          "defaultAction": {
+            "type": "uri",
+            "label": "View detail",
+            "uri": `http://188.166.221.231:3388/register?user_id=${userId}`
+          },
+          "actions": [
+            {
+              "type": "uri",
+              "label": "Register",
+              "uri": `http://188.166.221.231:3388/register?user_id=${userId}`
+            }
+          ]
+        }
+      };
+      return replyTemplate(replyToken, message);
+    }
   }
 //   if(message.text == 'สมัครสมาชิก'){
 //     let customer = (await conpool.query(`SELECT * FROM customer WHERE line_id = $1 AND status = true `, [userId])).rows[0]

@@ -50,9 +50,9 @@ const Login = async()=>{
                 <VTextField v-model="mobile" label="เบอร์โทร" type="text" :rules="[requiredValidator]"/>
               </VCol>
               <VCol cols="12" class="text-center">
-                <span>ยังไม่เป็นสมาขิก ?</span>
+                <span>ยังไม่เป็นสมาชิก ?</span>
                 <a type="button" class="text-primary ms-2" @click="router.push({ path: '/register' })">
-                  สมัครสมาขิก
+                  สมัครสมาชิก
                 </a>
               </VCol>
               <VCol cols="12">

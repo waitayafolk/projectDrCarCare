@@ -73,7 +73,7 @@ const Login = async()=>{
             <VCard  class="mt-12 mt-sm-0 pa-4">
                 <VCardText>
                     <h5 class="text-h5 font-weight-semibold mb-1">
-                        สมัครสมาขิก Dr.Carcare ! 👋🏻
+                        สมัครสมาชิก Dr.Carcare ! 👋🏻
                     </h5>
                 </VCardText>
                 <VCardText>
