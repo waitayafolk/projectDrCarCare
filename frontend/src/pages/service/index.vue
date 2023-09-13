@@ -59,7 +59,7 @@ export default {
                 price : this.service.price , 
                 status : true , 
                 admin_id : JSON.parse(localStorage.getItem('user_data')).id,
-                service_group_id : this.service.service_group_id.id != undefined ? this.service.service_group_id.id : this.service.service_group_id
+                service_group_id : this.service.service_group_id.id == undefined ? this.service.service_group_id  : this.service.service_group_id.id
             }
             await service({ method: 'post', url: `/services/save-service`, data: data, params: [] })
             .then((response) => {
