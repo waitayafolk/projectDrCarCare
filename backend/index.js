@@ -354,7 +354,297 @@ async function handleText(message, replyToken,userId) {
         }
       };
       return replyTemplate(replyToken, message);
+    }else{
+      let bill = (await conpool.query(`SELECT * FROM bill WHERE customer_id = $1 AND status = 'wait' `, [customer.id])).rows[0]
+      if(bill == undefined){
+        const message = {
+          "type": "flex",
+          "altText": "Dr.Carcare",
+          "contents": {
+            "type": "bubble",
+            "body": {
+              "type": "box",
+              "layout": "vertical",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "Dr.Carcare",
+                  "weight": "bold",
+                  "size": "xl"
+                },
+                {
+                  "type": "text",
+                  "text": "ยังไม่มีการรับรถมาล้าง",
+                  "weight": "bold",
+                  "size": "xl"
+                },
+                // {
+                //   "type": "box",
+                //   "layout": "baseline",
+                //   "margin": "md",
+                //   "contents": [
+                //     {
+                //       "type": "text",
+                //       "text": "เวลาประมาณรับรถ",
+                //       "size": "sm"
+                //     },
+                //     {
+                //       "type": "text",
+                //       "text": "John Doe",
+                //       "margin": "sm",
+                //       "size": "sm",
+                //     }
+                //   ]
+                // },
+                // {
+                //   "type": "box",
+                //   "layout": "baseline",
+                //   "margin": "md",
+                //   "contents": [
+                //     {
+                //       "type": "text",
+                //       "text": "เปอร์เซ็นที่ล้างเสร็จ",
+                //       "size": "sm"
+                //     },
+                //     {
+                //       "type": "text",
+                //       "text": "30%",
+                //       "margin": "sm",
+                //       "size": "sm",
+                //     }
+                //   ]
+                // },
+              ]
+            },
+            "footer": {
+              "type": "box",
+              "layout": "vertical",
+              "contents": [
+              ]
+            }
+          }
+        }
+        return replyTemplate(replyToken, message);
+      }else{
+        let check = (await conpool.query(`
+        SELECT bill.* , customer.mobile , customer.name as name_customer , admin.name as name_admin , service_group.name as name_service FROM bill 
+                    LEFT JOIN customer on bill.customer_id = customer.id
+                    LEFT JOIN admin on bill.admin_id = admin.id
+                    LEFT JOIN service_group on bill.service_group_id = service_group.id
+                    WHERE bill.status != 'delete' AND customer_id = $1
+                    Order by bill.id DESC 
+        `, [customer.id])).rows[0]
+        let years = new Date(check.created_date).getFullYear()
+        let month = String(new Date(check.created_date).getMonth()+1).padStart(2, '0') 
+        let day = String(new Date(check.created_date).getDate()).padStart(2, '0') 
+        let hours = String(new Date(check.created_date).getHours()).padStart(2, '0') 
+        let minute = String(new Date(check.created_date).getMinutes()).padStart(2, '0') 
+        let finitdate = `${years}-${month}-${day} ${hours}:${minute}`
+        const message = {
+          "type": "flex",
+          "altText": "Dr.Carcare",
+          "contents": {
+            "type": "bubble",
+            "hero": {
+              "type": "image",
+              "url": "https://example.com/flex/images/image.jpg",
+              // "https://images.unsplash.com/photo-1575936123452-b67c3203c357?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D&w=1000&q=80",
+              "size": "full",
+              "aspectRatio": "20:13",
+              "aspectMode": "cover"
+            },
+            "body": {
+              "type": "box",
+              "layout": "vertical",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "Dr.Carcare",
+                  "weight": "bold",
+                  "size": "xl"
+                },
+                {
+                  "type": "text",
+                  "text": "ล้างรถ",
+                  "weight": "bold",
+                  "size": "xl"
+                },
+                {
+                  "type": "box",
+                  "layout": "baseline",
+                  "margin": "md",
+                  "contents": [
+                    {
+                      "type": "text",
+                      "text": "เวลาประมาณล้างเสร็จ",
+                      "size": "sm"
+                    },
+                    {
+                      "type": "text",
+                      "text": `${finitdate}`,
+                      "margin": "sm",
+                      "size": "sm",
+                    }
+                  ]
+                },
+                {
+                  "type": "box",
+                  "layout": "baseline",
+                  "margin": "md",
+                  "contents": [
+                    {
+                      "type": "text",
+                      "text": "เปอร์เซ็นที่ล้างเสร็จ",
+                      "size": "sm"
+                    },
+                    {
+                      "type": "text",
+                      "text": `${check.percen}%`,
+                      "margin": "sm",
+                      "size": "sm",
+                    }
+                  ]
+                },
+                {
+                  "type": "box",
+                  "layout": "baseline",
+                  "margin": "md",
+                  "contents": [
+                    {
+                      "type": "text",
+                      "text": "ราคา",
+                      "size": "sm"
+                    },
+                    {
+                      "type": "text",
+                      "text": `${check.price.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} บาท`,
+                      "margin": "sm",
+                      "size": "sm",
+                    }
+                  ]
+                },
+                {
+                  "type": "box",
+                  "layout": "baseline",
+                  "margin": "md",
+                  "contents": [
+                    {
+                      "type": "text",
+                      "text": "ส่วนลด",
+                      "size": "sm"
+                    },
+                    {
+                      "type": "text",
+                      "text": `${check.discount.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} บาท`,
+                      "margin": "sm",
+                      "size": "sm",
+                    }
+                  ]
+                },
+                {
+                  "type": "box",
+                  "layout": "baseline",
+                  "margin": "md",
+                  "contents": [
+                    {
+                      "type": "text",
+                      "text": "ยอดรวม",
+                      "size": "sm"
+                    },
+                    {
+                      "type": "text",
+                      "text": `${check.total.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} บาท`,
+                      "margin": "sm",
+                      "size": "sm",
+                    }
+                  ]
+                },
+              ]
+            },
+            "footer": {
+              "type": "box",
+              "layout": "vertical",
+              "contents": [
+              ]
+            }
+          }
+        }
+        return replyTemplate(replyToken, message);
+      }
+      // console.log(bill)
     }
+  }else if (message.text == 'Promotion'){
+    const message = {
+      "type": "flex",
+      "altText": "Dr.Carcare",
+      "contents": {
+        "type": "bubble",
+        "body": {
+          "type": "box",
+          "layout": "vertical",
+          "contents": [
+            {
+              "type": "text",
+              "text": "Promotion",
+              "weight": "bold",
+              "size": "xl"
+            },
+            {
+              "type": "text",
+              "text": "ยังไม่มีโปรโมชัน",
+              "weight": "bold",
+              "size": "xl"
+            },
+          ]
+        },
+        "footer": {
+          "type": "box",
+          "layout": "vertical",
+          "contents": [
+          ]
+        }
+      }
+    }
+    return replyTemplate(replyToken, message);
+  }else if (message.text == 'Member'){
+    const message = {
+      "type": "flex",
+      "altText": "Dr.Carcare",
+      "contents": {
+        "type": "bubble",
+        "body": {
+          "type": "box",
+          "layout": "vertical",
+          "contents": [
+            {
+              "type": "text",
+              "text": "Member",
+              "weight": "bold",
+              "size": "xl"
+            },
+            {
+              "type": "text",
+              "text": "ระบบสมาขิกจะมาเร็วๆนี้",
+              "weight": "bold",
+              "size": "xl"
+            },
+            {
+              "type": "text",
+              "text": "โปรดรอสักครู่",
+              "weight": "bold",
+              "size": "xl"
+            },
+          ]
+        },
+        "footer": {
+          "type": "box",
+          "layout": "vertical",
+          "contents": [
+          ]
+        }
+      }
+    }
+    return replyTemplate(replyToken, message);
   }
 //   if(message.text == 'สมัครสมาชิก'){
 //     let customer = (await conpool.query(`SELECT * FROM customer WHERE line_id = $1 AND status = true `, [userId])).rows[0]
