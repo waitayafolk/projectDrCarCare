@@ -59,7 +59,7 @@ export default {
                 price : this.service.price , 
                 status : true , 
                 admin_id : JSON.parse(localStorage.getItem('user_data')).id,
-                service_group_id : this.service.service_group_id.id
+                service_group_id : this.service.service_group_id.id != undefined ? this.service.service_group_id.id : this.service.service_group_id
             }
             await service({ method: 'post', url: `/services/save-service`, data: data, params: [] })
             .then((response) => {
@@ -138,7 +138,15 @@ export default {
             .catch((error) => {
                 console.log(error);
             });
-        },
+        },async editData(item){
+            this.service.id = item.id
+            this.service.detail = item.detail
+            this.service.price = item.price
+            this.service.service_group_id = item.service_group_id
+            // console.log(this.service)
+            // this.service = item 
+            this.show = true
+        }
     },
     mounted() {
         this.getData()
@@ -194,7 +202,7 @@ export default {
                             <VBtn size="small" color="error" @click="deleteService(item)">
                                 <VIcon start icon="tabler-trash"/> ลบ
                             </VBtn>
-                            <VBtn size="small" color="primary" @click=" service = item , show = true">
+                            <VBtn size="small" color="primary" @click="editData(item)">
                                 <VIcon start icon="tabler-edit"/> แก้ไข
                             </VBtn>
                         </td>

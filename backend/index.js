@@ -133,8 +133,11 @@ app.post("/getbill", async function (req, res) {
 
 app.post("/register", async function (req, res) {
   try{
+    let line_id = (await conpool.query(`SELECT * FROM customer WHERE line_id = $1 `, [req.body.user_id])).rows
+    console.log(line_id)
+    return
     conpool.query(
-      `SELECT * FROM customer WHERE mobile = ($1) `,
+      `SELECT * FROM customer WHERE mobile = $1 `,
       [req.body.mobile],
       async (err, result) => {
         if (err) {
@@ -620,7 +623,7 @@ async function handleText(message, replyToken,userId) {
             },
             {
               "type": "text",
-              "text": "ยังไม่มีโปรโมชัน",
+              "text": "ยังไม่มีโปรโมชั่น",
               "weight": "bold",
               "size": "xl"
             },
@@ -653,7 +656,7 @@ async function handleText(message, replyToken,userId) {
             },
             {
               "type": "text",
-              "text": "ระบบสมาขิกจะมาเร็วๆนี้",
+              "text": "ระบบสมาชิกจะมาเร็วๆนี้",
               "weight": "bold",
               "size": "xl"
             },
