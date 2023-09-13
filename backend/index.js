@@ -133,9 +133,6 @@ app.post("/getbill", async function (req, res) {
 
 app.post("/register", async function (req, res) {
   try{
-    let line_id = (await conpool.query(`SELECT * FROM customer WHERE line_id = $1 `, [req.body.user_id])).rows
-    console.log(line_id)
-    return
     conpool.query(
       `SELECT * FROM customer WHERE mobile = $1 `,
       [req.body.mobile],
