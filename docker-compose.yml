@@ -15,7 +15,7 @@ services:
     networks:
       - carcare-network 
       
-    restart: unless-stopped
+    restart: always
   # carcare_web:
   carcare_web:
     container_name: carcare_web_frontend
