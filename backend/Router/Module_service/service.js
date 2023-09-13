@@ -51,7 +51,7 @@ exports.saveService = async (req, res) => {
                 }
             });
         }else{
-            db.query(`UPDATE service SET title = $1 , detail = $2 , price = $3 , status = $4 , admin_id = $5 , service_group_id = $6WHERE id = $7 ` , 
+            db.query(`UPDATE service SET title = $1 , detail = $2 , price = $3 , status = $4 , admin_id = $5 , service_group_id = $6 WHERE id = $7 ` , 
             [req.body.title , req.body.detail , req.body.price , 'use', req.body.admin_id ,req.body.service_group_id , req.body.id], (err, result) => {
                 if (err) {
                     throw Error(err);
