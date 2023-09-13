@@ -124,6 +124,9 @@
             .catch((error) => {
                 console.log(error);
             });
+        },
+        async openBill(item){
+            
         }
     }
   }
@@ -189,7 +192,7 @@
                                 <VBtn :disabled="item.percen == 100 ? true : false" size="x-small" color="info" @click="updatePercen(100 , item.id)" block class="mt-1">
                                     สำเร็จ 100%
                                 </VBtn>
-                                <VBtn size="x-small" color="success" @click="openDeposit(item)" block class="mt-1">
+                                <VBtn target="_blank" :href="`/bill?bill_id=${item.id}`" size="x-small" color="success" @click="openBill(item)" block class="mt-1">
                                     บิล
                                 </VBtn>
                             </td>

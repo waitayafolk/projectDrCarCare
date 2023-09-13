@@ -102,6 +102,35 @@ app.post("/login", async function (req, res) {
   }
 });
 
+app.post("/getbill", async function (req, res) {
+  try{
+    conpool.query(`SELECT bill.* , customer.mobile , customer.name as name_customer , admin.name as name_admin , service_group.name as name_service FROM bill 
+        LEFT JOIN customer on bill.customer_id = customer.id
+        LEFT JOIN admin on bill.admin_id = admin.id
+        LEFT JOIN service_group on bill.service_group_id = service_group.id
+        WHERE bill.id = $1
+        Order by bill.id DESC `,[req.body.bill_id]
+    ,async (err, result) => {
+    if (err) {
+    throw Error(err);
+    } else {
+    for(let bill of result.rows){
+        bill.detail = (await conpool.query(`SELECT bill_detail.* , service.title FROM bill_detail LEFT JOIN service on service.id = bill_detail.service_id WHERE bill_id = $1 `, [bill.id])).rows
+    }
+    let company = (await conpool.query(`SELECT * FROM setting WHERE id = 1 `, [])).rows
+    // console.log(company)
+    res.status(200).json({
+        status: "success",
+        bill: result.rows,
+        company : company[0]
+    });
+    }
+    });
+  }catch(error){
+    res.status(400).json({ status: error.message });
+  }
+});
+
 app.post("/register", async function (req, res) {
   try{
     conpool.query(
@@ -437,7 +466,7 @@ async function handleText(message, replyToken,userId) {
         let years = new Date(check.created_date).getFullYear()
         let month = String(new Date(check.created_date).getMonth()+1).padStart(2, '0') 
         let day = String(new Date(check.created_date).getDate()).padStart(2, '0') 
-        let hours = String(new Date(check.created_date).getHours()).padStart(2, '0') 
+        let hours = String(new Date(check.created_date).getHours()+1).padStart(2, '0') 
         let minute = String(new Date(check.created_date).getMinutes()).padStart(2, '0') 
         let finitdate = `${years}-${month}-${day} ${hours}:${minute}`
         const message = {
