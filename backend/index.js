@@ -387,7 +387,7 @@ async function handleText(message, replyToken,userId) {
       };
       return replyTemplate(replyToken, message);
     }else{
-      let bill = (await conpool.query(`SELECT * FROM bill WHERE customer_id = $1 AND status = 'wait' `, [customer.id])).rows[0]
+      let bill = (await conpool.query(`SELECT * FROM bill WHERE customer_id = $1 AND status != 'delete' `, [customer.id])).rows[0]
       if(bill == undefined){
         const message = {
           "type": "flex",
