@@ -5,7 +5,7 @@ exports.getCustimer = async (req, res) => {
     try{
         db.query(`SELECT * FROM customer WHERE status != 'delete' Order by id DESC `, (err, result) => {
             if (err) {
-                throw Error(err);
+                res.status(500).send('Internal Server Error');
             } else {
                 res.status(200).json({
                     status: "success",
@@ -25,7 +25,7 @@ exports.saveCustomer = async (req, res) => {
             VALUES ($1 , $2 , $3  , $4 ) ` , 
             [req.body.mobile , req.body.name ,  'use' ,  new Date()], (err, result) => {
                 if (err) {
-                    throw Error(err);
+                    res.status(500).send('Internal Server Error');
                 } else {
                     res.status(200).json({
                         status: "success",
@@ -37,7 +37,7 @@ exports.saveCustomer = async (req, res) => {
             db.query(`UPDATE customer SET mobile = $1 , name = $2 , status = $3 WHERE id = $4 ` , 
             [req.body.mobile , req.body.name , 'use' , req.body.id], (err, result) => {
                 if (err) {
-                    throw Error(err);
+                    res.status(500).send('Internal Server Error');
                 } else {
                     res.status(200).json({
                         status: "success",

@@ -5,7 +5,7 @@ exports.getAdmin = async (req, res) => {
     try{
         db.query(`SELECT * FROM admin WHERE status != 'delete' Order by id DESC `, (err, result) => {
             if (err) {
-                throw Error(err);
+                res.status(500).send('Internal Server Error');
             } else {
                 res.status(200).json({
                     status: "success",
@@ -25,7 +25,7 @@ exports.saveAdmin = async (req, res) => {
             VALUES ($1 , $2 , $3  , $4 ,$5 ,$6 ,$7 ) ` , 
             [req.body.username , await bcrypt.hashSync(req.body.password, 12) ,  req.body.name ,  req.body.code ,  req.body.role ,  'use' ,  new Date()], (err, result) => {
                 if (err) {
-                    throw Error(err);
+                    res.status(500).send('Internal Server Error');
                 } else {
                     res.status(200).json({
                         status: "success",
@@ -37,7 +37,7 @@ exports.saveAdmin = async (req, res) => {
             db.query(`UPDATE admin SET name = $1 , username = $2 , code = $3 , role = $4 , status = $5 WHERE id = $6 ` , 
             [req.body.name , req.body.username , req.body.code , req.body.role, 'use' , req.body.id], (err, result) => {
                 if (err) {
-                    throw Error(err);
+                    res.status(500).send('Internal Server Error');
                 } else {
                     res.status(200).json({
                         status: "success",

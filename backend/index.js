@@ -62,7 +62,7 @@ app.post("/login", async function (req, res) {
       [req.body.username],
       async (err, result) => {
         if (err) {
-            throw Error(err);
+            res.status(500).send('Internal Server Error');
         } else {
             let admin = result.rows[0]
             // console.log(admin.status)
@@ -102,6 +102,23 @@ app.post("/login", async function (req, res) {
   }
 });
 
+function thaiDateNotime (data){
+  const date = new Date(data)
+
+  const result = date.toLocaleDateString('th-TH', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      // weekday: 'long',
+      hour: 'numeric',
+      minute: 'numeric',
+      // second: 'numeric',
+  })
+  // console.log(result)
+
+  return result
+}
+
 app.post("/getbill", async function (req, res) {
   try{
     conpool.query(`SELECT bill.* , customer.mobile , customer.name as name_customer , admin.name as name_admin , service_group.name as name_service FROM bill 
@@ -112,7 +129,7 @@ app.post("/getbill", async function (req, res) {
         Order by bill.id DESC `,[req.body.bill_id]
     ,async (err, result) => {
     if (err) {
-    throw Error(err);
+    res.status(500).send('Internal Server Error');
     } else {
     for(let bill of result.rows){
         bill.detail = (await conpool.query(`SELECT bill_detail.* , service.title FROM bill_detail LEFT JOIN service on service.id = bill_detail.service_id WHERE bill_id = $1 `, [bill.id])).rows
@@ -138,14 +155,14 @@ app.post("/register", async function (req, res) {
       [req.body.mobile],
       async (err, result) => {
         if (err) {
-            throw Error(err);
+            res.status(500).send('Internal Server Error');
         } else {  
           let data = result.rows[0]
           if(data != undefined || data != null){
             conpool.query(`UPDATE customer SET mobile = $1 , name = $2 , line_id = $3 , status = 'use' WHERE id = $4 ` , 
             [req.body.mobile , req.body.name , req.body.user_id , data.id], (err, result) => {
               if (err) {
-                throw Error(err);
+                res.status(500).send('Internal Server Error');
               } else {
                 res.status(200).json({
                   status: "success",
@@ -158,7 +175,7 @@ app.post("/register", async function (req, res) {
             VALUES ($1 , $2 , $3  , $4 , $5 ) ` , 
             [req.body.mobile , req.body.name ,  'use' ,  new Date() , req.body.user_id], (err, result) => {
                 if (err) {
-                    throw Error(err);
+                    res.status(500).send('Internal Server Error');
                 } else {
                     res.status(200).json({
                         status: "success",
@@ -182,7 +199,7 @@ app.post("/login/customer", async function (req, res) {
       [req.body.mobile],
       async (err, result) => {
         if (err) {
-            throw Error(err);
+            res.status(500).send('Internal Server Error');
         } else {
             let customer = result.rows[0]
             // console.log(customer)
@@ -219,21 +236,11 @@ app.post("/login/customer", async function (req, res) {
   }
 });
 
-// let opts = {
-//   method: 'GET',
-//   hostname: "localhost",
-//   port: 433,
-//   path: '/',
-//   ca: fs.readFileSync("ca-certificate.crt")
-// };
-
-// https.request(opts, (response) => { }).end();
-
 app.post("/chang-password", verifyToken, async(req, res) => {
   conpool.query(`UPDATE admin SET password = $1  WHERE id = $2 ` , 
     [await bcrypt.hashSync(req.body.password, 12) , req.body.id ], (err, result) => {
         if (err) {
-            throw Error(err);
+            res.status(500).send('Internal Server Error');
         } else {
             res.status(200).json({
                 status: "success",
@@ -244,31 +251,29 @@ app.post("/chang-password", verifyToken, async(req, res) => {
 });
 
 app.post("/upload", verifyToken, (req, res) => {
-    // if (req.files === null || req.files === undefined) {
-    //     return res.status(400).json({ msg: "No file uploaded" });
-    // }
-
-    // const file = req.files.file;
-    console.log(req.body.fileName)
-    // file.mv(`${__dirname}/upload/image/${file.name}`, (err) => {
-    //     if (err) {
-    //     console.error(err);
-    //     return res.status(500).send(err);
-    //     } else {
-    //     conpool.query(
-    //         `UPDATE tb_company SET image_logo = $1 
-    //                         WHERE id = $2 `,
-    //         [`${file.name}`, req.payload.id],
-    //         async (err, result) => {
-    //         if (err) {
-    //             throw Error(err);
-    //         } else {
-    //             res.json({ status: `success` });
-    //         }
-    //         }
-    //     );
-    //     }
-    // });
+    if (req.files === null || req.files === undefined) {
+        return res.status(400).json({ msg: "No file uploaded" });
+    }
+    const file = req.files.images;
+    file.mv(`${__dirname}/upload/image/${file.name}`, (err) => {
+        if (err) {
+        console.error(err);
+        return res.status(500).send(err);
+        } else {
+        conpool.query(
+            `UPDATE setting SET logo = $1 
+                            WHERE id = 1 `,
+            [`${file.name}`],
+            async (err, result) => {
+            if (err) {
+                res.status(500).send('Internal Server Error');
+            } else {
+                res.json({ status: `success` });
+            }
+            }
+        );
+        }
+    });
 });
 
 app.post('/webhook' , (req, res) => {
@@ -463,12 +468,17 @@ async function handleText(message, replyToken,userId) {
                     WHERE bill.status != 'delete' AND customer_id = $1
                     Order by bill.id DESC 
         `, [customer.id])).rows[0]
+        
         let years = new Date(check.created_date).getFullYear()
         let month = String(new Date(check.created_date).getMonth()+1).padStart(2, '0') 
         let day = String(new Date(check.created_date).getDate()).padStart(2, '0') 
         let hours = String(new Date(check.created_date).getHours()+1).padStart(2, '0') 
         let minute = String(new Date(check.created_date).getMinutes()).padStart(2, '0') 
         let finitdate = `${years}-${month}-${day} ${hours}:${minute}`
+        // let image = null 
+        // if(check.percen == 100 ){
+        //   image = '../img/percen2.png'
+        // }
         const message = {
           "type": "flex",
           "altText": "Dr.Carcare",
@@ -476,7 +486,7 @@ async function handleText(message, replyToken,userId) {
             "type": "bubble",
             "hero": {
               "type": "image",
-              "url": "https://example.com/flex/images/image.jpg",
+              "url": `https://images.unsplash.com/photo-1575936123452-b67c3203c357?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D&w=1000&q=80`,
               // "https://images.unsplash.com/photo-1575936123452-b67c3203c357?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D&w=1000&q=80",
               "size": "full",
               "aspectRatio": "20:13",
@@ -510,7 +520,7 @@ async function handleText(message, replyToken,userId) {
                     },
                     {
                       "type": "text",
-                      "text": `${finitdate}`,
+                      "text": `${thaiDateNotime(finitdate)}`,
                       "margin": "sm",
                       "size": "sm",
                     }

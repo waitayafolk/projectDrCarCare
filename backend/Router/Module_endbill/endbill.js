@@ -15,7 +15,7 @@ exports.endbill = async (req, res) => {
         VALUES ($1 , $2 , $3  , $4 ,$5 ,$6 ,$7 , 'wait' , $8 ) returning id ` , 
         [price , discount ,  total ,  req.body.service_group_id ,  req.payload.id ,  req.body.customer_id , 0 , new Date()], async(err, result) => {
             if (err) {
-                throw Error(err);
+                res.status(500).send('Internal Server Error');
             } else {
                 let bill_id = result.rows[0].id
                 for(let detail of req.body.service){
@@ -44,7 +44,7 @@ exports.getBill = async (req, res) => {
                     Order by bill.id DESC `
         ,async (err, result) => {
             if (err) {
-                throw Error(err);
+                res.status(500).send('Internal Server Error');
             } else {
                 for(let bill of result.rows){
                     bill.detail = (await db.query(`SELECT bill_detail.* , service.title FROM bill_detail LEFT JOIN service on service.id = bill_detail.service_id WHERE bill_id = $1 `, [bill.id])).rows
@@ -69,7 +69,7 @@ exports.update = async (req, res) => {
         db.query(`UPDATE bill SET percen = $1 , admin_id = $2 ,status = $3 WHERE id = $4 ` , 
         [req.body.percen , req.payload.id , status , req.body.bill_id  ], (err, result) => {
             if (err) {
-                throw Error(err);
+                res.status(500).send('Internal Server Error');
             } else {
                 res.status(200).json({
                     status: "success",
@@ -86,7 +86,7 @@ exports.update = async (req, res) => {
 //     try{
 //         db.query(`UPDATE service_group SET status = 'delete' WHERE id = $1 `, [req.params.id] , (err, result) => {
 //             if (err) {
-//                 throw Error(err);
+//                 res.status(500).send('Internal Server Error');
 //             } else {
 //                 res.status(200).json({
 //                     status: "success",
@@ -103,7 +103,7 @@ exports.update = async (req, res) => {
 //     try{
 //         db.query(`SELECT * FROM service_group WHERE status != 'delete' Order by id DESC `, (err, result) => {
 //             if (err) {
-//                 throw Error(err);
+//                 res.status(500).send('Internal Server Error');
 //             } else {
 //                 res.status(200).json({
 //                     status: "success",
@@ -123,7 +123,7 @@ exports.update = async (req, res) => {
 //             VALUES ($1 , $2 , $3  , $4 ,$5 ,$6  ) ` , 
 //             [req.body.code , req.body.name ,  req.body.detail ,  'use' ,  req.body.admin_id ,  new Date()], (err, result) => {
 //                 if (err) {
-//                     throw Error(err);
+//                     res.status(500).send('Internal Server Error');
 //                 } else {
 //                     res.status(200).json({
 //                         status: "success",
@@ -135,7 +135,7 @@ exports.update = async (req, res) => {
 //             db.query(`UPDATE service_group SET code = $1 , name = $2 , detail = $3 , status = $4 , admin_id = $5 WHERE id = $6 ` , 
 //             [req.body.code , req.body.name , req.body.detail , 'use' , req.body.admin_id , req.body.id], (err, result) => {
 //                 if (err) {
-//                     throw Error(err);
+//                     res.status(500).send('Internal Server Error');
 //                 } else {
 //                     res.status(200).json({
 //                         status: "success",
@@ -154,7 +154,7 @@ exports.update = async (req, res) => {
 //     try{
 //         db.query(`SELECT * FROM service WHERE status != 'delete' and service_group_id = $1`,[req.params.id], (err, result) => {
 //             if (err) {
-//                 throw Error(err);
+//                 res.status(500).send('Internal Server Error');
 //             } else {
 //                 res.status(200).json({
 //                     status: "success",

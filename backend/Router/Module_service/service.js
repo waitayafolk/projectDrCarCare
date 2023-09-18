@@ -5,7 +5,7 @@ exports.deleteService = async (req, res) => {
     try{
         db.query(`UPDATE service SET status = 'delete' WHERE id = $1 `, [req.params.id] , (err, result) => {
             if (err) {
-                throw Error(err);
+                res.status(500).send('Internal Server Error');
             } else {
                 res.status(200).json({
                     status: "success",
@@ -20,9 +20,10 @@ exports.deleteService = async (req, res) => {
 
 exports.getService = async (req, res) => {
     try{
-        db.query(`SELECT * FROM service WHERE status != 'delete' Order by id DESC `, (err, result) => {
+        db.query(`SELECT service.* , service_group.name FROM service LEFT JOIN service_group on service_group.id = service.service_group_id 
+                    WHERE service.status != 'delete' AND service_group.status != 'delete' Order by service.id DESC `, (err, result) => {
             if (err) {
-                throw Error(err);
+                res.status(500).send('Internal Server Error');
             } else {
                 res.status(200).json({
                     status: "success",
@@ -42,7 +43,7 @@ exports.saveService = async (req, res) => {
             VALUES ($1 , $2 , $3  , $4 ,$5 ,$6 ,$7 ) ` , 
             [req.body.title , req.body.detail ,  req.body.price ,  'use' ,  req.body.admin_id ,  new Date() , req.body.service_group_id], (err, result) => {
                 if (err) {
-                    throw Error(err);
+                    res.status(500).send('Internal Server Error');
                 } else {
                     res.status(200).json({
                         status: "success",
@@ -54,7 +55,7 @@ exports.saveService = async (req, res) => {
             db.query(`UPDATE service SET title = $1 , detail = $2 , price = $3 , status = $4 , admin_id = $5 , service_group_id = $6 WHERE id = $7 ` , 
             [req.body.title , req.body.detail , req.body.price , 'use', req.body.admin_id ,req.body.service_group_id , req.body.id], (err, result) => {
                 if (err) {
-                    throw Error(err);
+                    res.status(500).send('Internal Server Error');
                 } else {
                     res.status(200).json({
                         status: "success",
@@ -73,7 +74,7 @@ exports.deleteServiceGroup = async (req, res) => {
     try{
         db.query(`UPDATE service_group SET status = 'delete' WHERE id = $1 `, [req.params.id] , (err, result) => {
             if (err) {
-                throw Error(err);
+                res.status(500).send('Internal Server Error');
             } else {
                 res.status(200).json({
                     status: "success",
@@ -90,7 +91,7 @@ exports.getServiceGroup = async (req, res) => {
     try{
         db.query(`SELECT * FROM service_group WHERE status != 'delete' Order by id DESC `, (err, result) => {
             if (err) {
-                throw Error(err);
+                res.status(500).send('Internal Server Error');
             } else {
                 res.status(200).json({
                     status: "success",
@@ -110,7 +111,7 @@ exports.saveServiceGroup = async (req, res) => {
             VALUES ($1 , $2 , $3  , $4 ,$5 ,$6  ) ` , 
             [req.body.code , req.body.name ,  req.body.detail ,  'use' ,  req.body.admin_id ,  new Date()], (err, result) => {
                 if (err) {
-                    throw Error(err);
+                    res.status(500).send('Internal Server Error');
                 } else {
                     res.status(200).json({
                         status: "success",
@@ -122,7 +123,7 @@ exports.saveServiceGroup = async (req, res) => {
             db.query(`UPDATE service_group SET code = $1 , name = $2 , detail = $3 , status = $4 , admin_id = $5 WHERE id = $6 ` , 
             [req.body.code , req.body.name , req.body.detail , 'use' , req.body.admin_id , req.body.id], (err, result) => {
                 if (err) {
-                    throw Error(err);
+                    res.status(500).send('Internal Server Error');
                 } else {
                     res.status(200).json({
                         status: "success",
@@ -141,7 +142,7 @@ exports.getServiceByid = async (req, res) => {
     try{
         db.query(`SELECT * FROM service WHERE status != 'delete' and service_group_id = $1`,[req.params.id], (err, result) => {
             if (err) {
-                throw Error(err);
+                res.status(500).send('Internal Server Error');
             } else {
                 res.status(200).json({
                     status: "success",
