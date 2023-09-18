@@ -90,6 +90,10 @@
             }
         },  
         async saveDate (){
+            if(this.data.customer_id == null || this.data.service_group_id == null || this.data.service.length == 0){
+                this.show = false
+                return  Swal.fire({ icon: 'error', title: 'รับรถไม่สำเร็จ', text: 'กรุณากรอกข้อมูลให้ครบ !',})
+            }
             await service({ method: 'post', url: `/endbill`, data: this.data , params: [] })
             .then((response) => {
                 if(response.status == "success"){

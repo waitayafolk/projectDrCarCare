@@ -131,9 +131,14 @@ export default {
             this.loading = true
             await service({ method: 'get', url: `/services/group`, data: [], params: [] })
             .then((response) => {
-                // console.log(response)
-                this.servicesGroup = response.data
-                // this.loading = false
+                let data = []
+                for(let item of response.data){
+                    data.push({
+                        id : item.id,
+                        name : item.name
+                    })
+                }
+                this.servicesGroup = data
             })
             .catch((error) => {
                 console.log(error);
@@ -142,9 +147,9 @@ export default {
             this.service.id = item.id
             this.service.detail = item.detail
             this.service.price = item.price
-            this.service.service_group_id = item.service_group_id
-            // console.log(this.service)
-            // this.service = item 
+            this.service.title = item.title
+            let find = this.servicesGroup.findIndex(data => data.id === item.service_group_id);
+            this.service.service_group_id = this.servicesGroup[find]
             this.show = true
         }
     },
@@ -179,6 +184,7 @@ export default {
                 <thead>
                     <tr>
                         <th style="text-align: start;">บริการ</th>
+                        <th style="text-align: start;">ประเภทบริการ</th>
                         <th style="text-align: start;">รายละเอียด</th>
                         <th style="text-align: start;">ค่าบริการ</th>
                         <th style="text-align: center;">สถานะ</th>
@@ -189,6 +195,7 @@ export default {
                 <tbody>
                     <tr v-for="item of services">
                         <td style="text-align: start;">{{ item.title }}</td>
+                        <td style="text-align: start;">{{ item.name }}</td>
                         <td style="text-align: start;">{{ item.detail }}</td>
                         <td style="text-align: start;">{{ item.price }}</td>
                         <td style="text-align: center;">
