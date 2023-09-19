@@ -79,7 +79,7 @@
                 <VCol cols="12">
                     <div id="preview">
                         <img v-if="company.file_url != null " :src="company.file_url" />
-                        <img v-if="company.logo != null " :src="`http://localhost:4600/upload/image/${company.logo}`" />
+                        <img v-if="company.logo != null " :src="`http://188.166.221.231:4600/upload/image/${company.logo}`" />
                     </div>
                 </VCol>
                 <VCol cols="12">
