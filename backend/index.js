@@ -315,6 +315,7 @@ function handleEvent(event) {
     case 'message':
       const message = event.message;
       // console.log(message.type)
+      // console.log(event.replyToken)
       // return
       switch (message.type) {
         case 'text':
@@ -389,7 +390,18 @@ async function handleText(message, replyToken,userId) {
       };
       return replyTemplate(replyToken, message);
     }else{
-      let bill = (await conpool.query(`SELECT * FROM bill WHERE customer_id = $1 AND status != 'delete' `, [customer.id])).rows[0]
+      // let bill = (await conpool.query(`SELECT * FROM bill WHERE customer_id = $1 AND status != 'delete' `, [customer.id])).rows[0]
+      let date_now = `${new Date().getFullYear()}-${String(new Date().getMonth()+1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2, '0')}`
+       
+      let bill = (await conpool.query(`
+      SELECT bill.* , customer.mobile , customer.name as name_customer , admin.name as name_admin , service_group.name as name_service FROM bill 
+                  LEFT JOIN customer on bill.customer_id = customer.id
+                  LEFT JOIN admin on bill.admin_id = admin.id
+                  LEFT JOIN service_group on bill.service_group_id = service_group.id
+                  WHERE bill.status != 'delete' AND customer_id = $1 AND DATE(bill.created_date) = $2
+                  Order by bill.id DESC 
+      `, [customer.id , date_now])).rows[0]
+
       if(bill == undefined){
         const message = {
           "type": "flex",
@@ -408,7 +420,7 @@ async function handleText(message, replyToken,userId) {
                 },
                 {
                   "type": "text",
-                  "text": "ยังไม่มีการรับรถมาล้าง",
+                  "text": "วันนี้ยังไม่มีการรับรถมาล้าง",
                   "weight": "bold",
                   "size": "xl"
                 },
@@ -460,25 +472,33 @@ async function handleText(message, replyToken,userId) {
         }
         return replyTemplate(replyToken, message);
       }else{
+        let date_now = `${new Date().getFullYear()}-${String(new Date().getMonth()+1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2, '0')}`
+       
         let check = (await conpool.query(`
         SELECT bill.* , customer.mobile , customer.name as name_customer , admin.name as name_admin , service_group.name as name_service FROM bill 
-                    LEFT JOIN customer on bill.customer_id = customer.id
-                    LEFT JOIN admin on bill.admin_id = admin.id
-                    LEFT JOIN service_group on bill.service_group_id = service_group.id
-                    WHERE bill.status != 'delete' AND customer_id = $1
-                    Order by bill.id DESC 
-        `, [customer.id])).rows[0]
-        
+          LEFT JOIN customer on bill.customer_id = customer.id
+          LEFT JOIN admin on bill.admin_id = admin.id
+          LEFT JOIN service_group on bill.service_group_id = service_group.id
+          WHERE bill.status != 'delete' AND customer_id = $1 AND DATE(bill.created_date) = $2
+          Order by bill.id DESC 
+        `, [customer.id , date_now])).rows[0]
+        // console.log(check)
+        // return
         let years = new Date(check.created_date).getFullYear()
         let month = String(new Date(check.created_date).getMonth()+1).padStart(2, '0') 
         let day = String(new Date(check.created_date).getDate()).padStart(2, '0') 
         let hours = String(new Date(check.created_date).getHours()+1).padStart(2, '0') 
         let minute = String(new Date(check.created_date).getMinutes()).padStart(2, '0') 
         let finitdate = `${years}-${month}-${day} ${hours}:${minute}`
-        // let image = null 
-        // if(check.percen == 100 ){
-        //   image = '../img/percen2.png'
-        // }
+        let image = null 
+        if(check.percen == 30 ){
+          image = 'https://3fc4-2001-44c8-4544-b710-b540-a43-7ae7-3ed9.ngrok-free.app/upload/image/percen1.png'
+        }else if(check.percen == 100 ){
+          image = 'https://3fc4-2001-44c8-4544-b710-b540-a43-7ae7-3ed9.ngrok-free.app/upload/image/percen2.png'
+        }else if(check.percen == 0 ){
+          image = 'https://example.com/flex/images/image.jpg'
+        }
+        let url = `http://188.166.221.231:3388/bill?bill_id=${check.id}`
         const message = {
           "type": "flex",
           "altText": "Dr.Carcare",
@@ -486,10 +506,10 @@ async function handleText(message, replyToken,userId) {
             "type": "bubble",
             "hero": {
               "type": "image",
-              "url": `https://images.unsplash.com/photo-1575936123452-b67c3203c357?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D&w=1000&q=80`,
+              "url": `${image}`,
               // "https://images.unsplash.com/photo-1575936123452-b67c3203c357?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D&w=1000&q=80",
               "size": "full",
-              "aspectRatio": "20:13",
+              "aspectRatio": "1:1",
               "aspectMode": "cover"
             },
             "body": {
@@ -595,15 +615,51 @@ async function handleText(message, replyToken,userId) {
                       "text": `${check.total.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} บาท`,
                       "margin": "sm",
                       "size": "sm",
-                    }
+                    },
                   ]
                 },
+                {
+                  "type": "separator",
+                  "color": "#000000"
+                },
+                {
+                  "type": "separator",
+                  "color": "#000000"
+                },
+                {
+                  "type": "box",
+                  "layout": "baseline",
+                  "margin": "md",
+                  "contents": [
+                      {
+                      "type": "text",
+                      "text": "การชำระ",
+                      "size": "sm"
+                      },
+                      {
+                      "type": "text",
+                      "text": `${check.pay == 'no' ? 'ยังไม่ชำระ' :'ชำระแล้ว'}`,
+                      "margin": "sm",
+                      "size": "sm",
+                      }
+                  ]
+              },
               ]
             },
             "footer": {
               "type": "box",
               "layout": "vertical",
               "contents": [
+                  {
+                      "type": "button",
+                      "action": {
+                          "type": "uri",
+                          "label": "บิลค่าบริการ",
+                          "uri": url
+                      },
+                      "style": "primary",
+                      "color": "#E040FB"
+                  }
               ]
             }
           }

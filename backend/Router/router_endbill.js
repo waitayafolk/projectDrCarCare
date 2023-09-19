@@ -6,7 +6,7 @@ const endbill = require('./Module_endbill/endbill')
 app.post('/', endbill.endbill)
 app.get('/bill', endbill.getBill)
 app.post('/update', endbill.update)
-
+app.post('/pay', endbill.pay)
 
 // app.post('/save-service', service.saveService)
 // app.delete('/:id', service.deleteService)
