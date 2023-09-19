@@ -32,6 +32,7 @@
             facebook : '' ,
             line : '' ,
             mobile : '' ,
+            logo : null ,
         }
       }
     },
@@ -46,7 +47,6 @@
             }
             await service({ method: 'post', url: '/getbill', data: data, params: [] })
             .then((response) => {
-                console.log(response)
                 this.company = response.company
                 this.bills = response.bill[0]
                 // this.bills = response.data
@@ -80,7 +80,7 @@
                 </td>
             </tr>
             <td style="text-align: center;">
-                <!-- <img src="ht   tp://jpos2.com:1500/uploads_logo/${billSale.bill.logo" alt="LOGO"/> -->
+                <img :src="`http://188.166.221.231:4600/upload/image/${company.logo}`" style="width: 30mm;" alt="LOGO"/>
             </td>
             <tr>
               <td style="font-size: 18px; text-align: center;">

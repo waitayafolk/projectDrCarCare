@@ -8,6 +8,7 @@
     },
     data() {
       return {
+        openPay : false , 
         thaiDateNotime,
         tital : 'All the best for your new project.' ,
         customers : [] , 
@@ -22,6 +23,10 @@
             service : [] ,
         },
         bills : [] ,
+        pay_bill : {
+            bill_id : 0 ,
+            pay : 'cash'
+        }
       }
     },
     mounted() {
@@ -48,6 +53,9 @@
         async getDataCuctomer() {
             await service({ method: 'get', url: '/customers', data: [], params: [] })
             .then((response) => {
+                for(let item of response.data){
+                    item.name = `${item.name} : ${item.mobile}` 
+                }
                 this.customers = response.data
             })
             .catch((error) => {
@@ -129,9 +137,29 @@
                 console.log(error);
             });
         },
-        async openBill(item){
-            
+        async payBill(item){
+            this.openPay = true
+            this.pay_bill.bill_id = item.id 
+            this.pay_bill.pay = {name : 'เงินสด' , value : 'cash'}
+        },
+        async savePay(){
+            await service({ method: 'post', url: `/endbill/pay`, data: this.pay_bill, params: [] })
+            .then((response) => {
+                if(response.status == "success"){
+                    Swal.fire({ icon: 'success', title: 'อัพเดทสำเร็จ', text: 'อัพเดทสถานะสำเร็จ !',})
+                     this.openPay = false
+                    this.getBill()
+                }else{
+                    Swal.fire({ icon: 'error', title: 'อัพเดทไม่สำเร็จ', text: 'กรุณาลองใหม่อีกครั้ง !',})
+                     this.openPay = false
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+           
         }
+        
     }
   }
 </script>
@@ -162,6 +190,7 @@
                         <th style="text-align: end;">ค่าบริการ</th>
                         <th style="text-align: end;">ส่วนลด</th>
                         <th style="text-align: end;">รวม</th>
+                        <th style="text-align: center;">การชำระ</th>
                         <th style="text-align: center;">สถานะ</th>
                         <th style="text-align: center;">วันที่รับรถ</th>
                         <th style="text-align: center;">รายการ</th>
@@ -179,24 +208,37 @@
                         <td style="text-align: end;">{{ item.discount }}</td>
                         <td style="text-align: end;">{{ item.total }}</td>
                         <th style="text-align: center;">
+                            <div v-if="item.pay == 'no'">
+                                <VBtn size="small" color="error" @click="payBill(item)" block class="mt-1">
+                                    ยังไม่ชำระ
+                                </VBtn>
+                            </div>
+                            <div v-if="item.pay == 'yes'">
+                                <VBtn size="small" color="success" block class="mt-1">
+                                    ชำระแล้ว {{ item.pay_type == 'cash' ? 'เงินสด' : 'เงินโอน' }}
+                                </VBtn>
+                                <!-- <VChip color="success">ชำระแล้ว</VChip> -->
+                            </div>
+                        </th>
+                        <th style="text-align: center;">
                             <div v-if="item.status == 'success'"><VChip color="success">เสร็จแล้ว</VChip></div>
-                            <div v-if="item.status == 'wait'"><VChip color="warning">กำลังล้าง</VChip></div>
+                            <div v-if="item.status == 'wait'"><VChip color="error">กำลังล้าง</VChip></div>
                         </th>
                         <td style="text-align: center;">
                             {{ thaiDateNotime(item.created_date) }}
                         </td>
                         <td style="text-align: center;">
                             <td>
-                                <VBtn size="x-small" color="primary" @click="detail = true; billDetail = item.detail " block class="mt-1">
+                                <VBtn size="small" color="primary" @click="detail = true; billDetail = item.detail " block class="mt-1">
                                     รายการ
                                 </VBtn>
-                                <VBtn :disabled="item.percen == 100 ? true : false" size="x-small" color="info" @click="updatePercen(30 , item.id)" block class="mt-1">
+                                <VBtn :disabled="item.percen == 100 ? true : false" size="small" color="info" @click="updatePercen(30 , item.id)" block class="mt-1">
                                     สำเร็จ 30%
                                 </VBtn>
-                                <VBtn :disabled="item.percen == 100 ? true : false" size="x-small" color="info" @click="updatePercen(100 , item.id)" block class="mt-1">
+                                <VBtn :disabled="item.percen == 100 ? true : false" size="small" color="info" @click="updatePercen(100 , item.id)" block class="mt-1">
                                     สำเร็จ 100%
                                 </VBtn>
-                                <VBtn target="_blank" :href="`/bill?bill_id=${item.id}`" size="x-small" color="success" @click="openBill(item)" block class="mt-1">
+                                <VBtn target="_blank" :href="`/bill?bill_id=${item.id}`" size="small" color="success" block class="mt-1">
                                     บิล
                                 </VBtn>
                             </td>
@@ -214,7 +256,20 @@
                 <VCardText>
                     <VRow>
                         <VCol cols="12">
-                            <VSelect v-model="data.customer_id" :items="customers" item-title="name" item-value="id" label="ลูกค้า" persistent-hint/>
+                            <v-autocomplete
+                                v-model="data.customer_id"
+                                label="กรุณาเลือกรายชื่อลูกค้า"
+                                auto-select-first
+                                :items="customers"
+                                hide-no-data
+                                hide-selected
+                                item-title="name"
+                                item-value="id"
+                                item-no="bank_no"
+                                class="mb-3"
+                            >
+                            </v-autocomplete>
+                            <!-- <VSelect v-model="data.customer_id" :items="customers" item-title="name" item-value="id" label="ลูกค้า" persistent-hint/> -->
                         </VCol>
                         <VCol cols="12">
                             <VSelect v-model="data.service_group_id" :items="service_group" item-title="name" item-value="id" label="ประเภทต่าบริการ" persistent-hint/>
@@ -314,6 +369,31 @@
                 <VCardText class="d-flex justify-end flex-wrap gap-3">
                     <VBtn variant="tonal" color="secondary" @click="detail = false">
                         ปิด
+                    </VBtn>
+                </VCardText>
+            </VCard>
+        </VDialog>
+        <VDialog v-model="openPay" max-width="800">
+            <DialogCloseBtn @click="openPay = false" />
+            <VCard>
+                <VCardTitle>
+                    ชำระบิล
+                </VCardTitle>
+                <VCardText>
+                    <VTable fixed-header density="compact" class="text-no-wrap">
+                        <VCol cols="12">
+                            <VSelect v-model="pay_bill.pay" :items="[
+                                {name : 'เงินสด' , value : 'cash'} ,{name : 'เงินโอน' , value : 'credit'} 
+                            ]" item-title="name" item-value="value" label="ลูกค้า" persistent-hint/>
+                        </VCol>
+                    </VTable>
+                </VCardText>
+                <VCardText class="d-flex justify-end flex-wrap gap-3">
+                    <VBtn variant="tonal" color="secondary" @click="openPay = false">
+                        ปิด
+                    </VBtn>
+                    <VBtn color="primary" @click="savePay()">
+                        บันทึกข้อมูล
                     </VBtn>
                 </VCardText>
             </VCard>
