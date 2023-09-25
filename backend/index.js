@@ -36,6 +36,8 @@ const services = require("./Router/router_services");
 const customers = require("./Router/router_customers");
 const company = require("./Router/router_company");
 const endbill = require("./Router/router_endbill");
+const packet = require("./Router/router_packet");
+
 app.use("/upload", express.static("upload"));
 app.use("/upload/logo", express.static("upload/logo"));
 
@@ -49,7 +51,7 @@ app.use("/services", verifyToken , services);
 app.use("/customers", verifyToken , customers);
 app.use("/company", verifyToken , company);
 app.use("/endbill", verifyToken , endbill);
-
+app.use("/packet", verifyToken , packet);
 
 app.get("/", function (req, res) {
   res.send("Api It Working !");
@@ -492,9 +494,9 @@ async function handleText(message, replyToken,userId) {
         let finitdate = `${years}-${month}-${day} ${hours}:${minute}`
         let image = null 
         if(check.percen == 30 ){
-          image = 'https://3fc4-2001-44c8-4544-b710-b540-a43-7ae7-3ed9.ngrok-free.app/upload/image/percen1.png'
+          image = 'https://7bb6-223-205-239-231.ngrok-free.app/upload/image/percen1.png'
         }else if(check.percen == 100 ){
-          image = 'https://3fc4-2001-44c8-4544-b710-b540-a43-7ae7-3ed9.ngrok-free.app/upload/image/percen2.png'
+          image = 'https://7bb6-223-205-239-231.ngrok-free.app/upload/image/percen2.png'
         }else if(check.percen == 0 ){
           image = 'https://example.com/flex/images/image.jpg'
         }

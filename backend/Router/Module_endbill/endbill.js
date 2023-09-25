@@ -62,9 +62,9 @@ exports.endbill = async (req, res) => {
                 let finitdate = `${years}-${month}-${day} ${hours}:${minute}`
                 let image = null 
                 if(check.percen == 30 ){
-                    image = 'https://3fc4-2001-44c8-4544-b710-b540-a43-7ae7-3ed9.ngrok-free.app/upload/image/percen1.png'
+                    image = 'https://7bb6-223-205-239-231.ngrok-free.app/upload/image/percen1.png'
                 }else if(check.percen == 100 ){
-                    image = 'https://3fc4-2001-44c8-4544-b710-b540-a43-7ae7-3ed9.ngrok-free.app/upload/image/percen2.png'
+                    image = 'https://7bb6-223-205-239-231.ngrok-free.app/upload/image/percen2.png'
                 }else if(check.percen == 0 ){
                     image = 'https://example.com/flex/images/image.jpg'
                 }
@@ -221,6 +221,11 @@ exports.endbill = async (req, res) => {
                         "layout": "vertical",
                         "contents": [
                             {
+                                "defaultAction": {
+                                    "type": "uri",
+                                    "label": "บิลค่าบริการ",
+                                    "uri": url
+                                },
                                 "type": "button",
                                 "action": {
                                     "type": "uri",
@@ -306,9 +311,9 @@ exports.update = async (req, res) => {
                 let finitdate = `${years}-${month}-${day} ${hours}:${minute}`
                 let image = null 
                 if(check.percen == 30 ){
-                    image = 'https://3fc4-2001-44c8-4544-b710-b540-a43-7ae7-3ed9.ngrok-free.app/upload/image/percen1.png'
+                    image = 'https://7bb6-223-205-239-231.ngrok-free.app/upload/image/percen1.png'
                 }else if(check.percen == 100 ){
-                    image = 'https://3fc4-2001-44c8-4544-b710-b540-a43-7ae7-3ed9.ngrok-free.app/upload/image/percen2.png'
+                    image = 'https://7bb6-223-205-239-231.ngrok-free.app/upload/image/percen2.png'
                 }else if(check.percen == 0 ){
                     image = 'https://example.com/flex/images/image.jpg'
                 }
@@ -564,3 +569,21 @@ const replyTemplate = (token, texts) => {
         texts
     );
 };
+
+exports.del = async (req, res) => {
+    try{
+        db.query(`UPDATE bill SET status = 'delete' WHERE id = $1 ` , 
+        [req.params.id], async(err, result) => {
+            if (err) {
+                res.status(500).send('Internal Server Error');
+            } else {
+                res.status(200).json({
+                    status: "success",
+                    message : 'ลบข้อมูลสำเร็จ'
+                });
+            }
+        });
+    }catch(err){
+         res.status(400).json({status: "error", message : err.message, });
+    }
+}
