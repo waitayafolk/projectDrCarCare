@@ -62,9 +62,9 @@ exports.endbill = async (req, res) => {
                 let finitdate = `${years}-${month}-${day} ${hours}:${minute}`
                 let image = null 
                 if(check.percen == 30 ){
-                    image = 'https://7bb6-223-205-239-231.ngrok-free.app/upload/image/percen1.png'
+                    image = 'https://7bb6-223-205-239-231.ngrok-free.app/upload/image/image2.png'
                 }else if(check.percen == 100 ){
-                    image = 'https://7bb6-223-205-239-231.ngrok-free.app/upload/image/percen2.png'
+                    image = 'https://7bb6-223-205-239-231.ngrok-free.app/upload/image/image1.png'
                 }else if(check.percen == 0 ){
                     image = 'https://example.com/flex/images/image.jpg'
                 }
@@ -255,13 +255,15 @@ exports.endbill = async (req, res) => {
 
 exports.getBill = async (req, res) => {
     try{
+        
+        // let date_now = `${new Date().getFullYear()}-${String(new Date().getMonth()+1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2, '0')}`
         db.query(`SELECT bill.* , customer.mobile , customer.name as name_customer , admin.name as name_admin , service_group.name as name_service FROM bill 
                     LEFT JOIN customer on bill.customer_id = customer.id
                     LEFT JOIN admin on bill.admin_id = admin.id
                     LEFT JOIN service_group on bill.service_group_id = service_group.id
-                    WHERE bill.status != 'delete' 
+                    WHERE bill.status != 'delete' AND DATE(bill.created_date) = $1
                     Order by bill.id DESC `
-        ,async (err, result) => {
+        ,[req.body.date],async (err, result) => {
             if (err) {
                 res.status(500).send('Internal Server Error');
             } else {
@@ -311,9 +313,9 @@ exports.update = async (req, res) => {
                 let finitdate = `${years}-${month}-${day} ${hours}:${minute}`
                 let image = null 
                 if(check.percen == 30 ){
-                    image = 'https://7bb6-223-205-239-231.ngrok-free.app/upload/image/percen1.png'
+                    image = 'https://7bb6-223-205-239-231.ngrok-free.app/upload/image/image2.png'
                 }else if(check.percen == 100 ){
-                    image = 'https://7bb6-223-205-239-231.ngrok-free.app/upload/image/percen2.png'
+                    image = 'https://7bb6-223-205-239-231.ngrok-free.app/upload/image/image1.png'
                 }else if(check.percen == 0 ){
                     image = 'https://example.com/flex/images/image.jpg'
                 }

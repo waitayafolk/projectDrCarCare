@@ -10,6 +10,15 @@ export default [
     icon: { icon: 'tabler-bus' },
   },
   {
+    title: 'รายงาน',
+    icon: { icon: 'tabler-list' },
+    show: true,
+    children: [
+      {title: 'รายวัน', to: 'report-per_day', show: true},
+      // {title: 'ลูกค้า', to: 'user-customer', show: true}
+    ]
+  },
+  {
     title: 'ผู้ใช้งานระบบ',
     icon: { icon: 'tabler-users' },
     show: true,
@@ -28,11 +37,11 @@ export default [
     ]
   },
   {
-    title: 'ของรางวัล',
+    title: 'แพ็คเกจ',
     icon: { icon: 'tabler-users' },
     show: true,
     children: [
-      {title: 'ของรางวัล', to: 'reward', show: true},
+      {title: 'แพ็คเกจ', to: 'reward', show: true},
     ]
   },
   {

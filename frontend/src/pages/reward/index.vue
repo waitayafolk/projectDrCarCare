@@ -24,16 +24,16 @@ export default {
             route: useRoute(),
             show : false ,
             servicesGroup : [],
-            service : {
+            packet : {
                 id : 0 , 
                 title : '' , 
                 detail : '' , 
                 price : 0 , 
                 status : false ,
-                admin_id : JSON.parse(localStorage.getItem('user_data')).id ,
-                service_group_id : 0
+                count : 0 ,
+                created_date : new Date()
             },
-            services : [],
+            packets : [],
             // item : [{name : 'เจ้าของ' , role : "admin"} ,{name : 'พนักงาน' , role : "agent"}]
         };
     },
@@ -41,10 +41,10 @@ export default {
         formatNumber,
         async getData() {
             this.loading = true
-            await service({ method: 'get', url: `/services`, data: [], params: [] })
+            await service({ method: 'get', url: `/packet`, data: [], params: [] })
             .then((response) => {
                 // console.log(response)
-                this.services = response.data
+                this.packets = response.data
                 this.loading = false
             })
             .catch((error) => {
@@ -52,16 +52,11 @@ export default {
             });
         },
         async saveData(){
-            let data = {
-                id : this.service.id , 
-                title : this.service.title , 
-                detail : this.service.detail , 
-                price : this.service.price , 
-                status : true , 
-                admin_id : JSON.parse(localStorage.getItem('user_data')).id,
-                service_group_id : this.service.service_group_id.id
+            if(this.packet.title == '' || this.packet.detail == '' || this.packet.price == 0 || this.packet.count == 0 ){
+                this.show = false
+                return Swal.fire({ icon: 'error', title: 'Error' , text: 'กรุณรากรอกข้อมูลให้ครบ !!',})
             }
-            await service({ method: 'post', url: `/services/save-service`, data: data, params: [] })
+            await service({ method: 'post', url: `/packet/save`, data: this.packet, params: [] })
             .then((response) => {
                 if(response.status == "success"){
                     Swal.fire({
@@ -85,15 +80,14 @@ export default {
             
         },async openModal(){
             this.show = true
-            this.service = {
+            this.packet = {
                 id : 0 , 
                 title : '' , 
                 detail : '' , 
                 price : 0 , 
-                status : false ,
-                admin_id : JSON.parse(localStorage.getItem('user_data')).id
+                count : 0 ,
             }
-        },async deleteService (item){
+        },async deletePacket (item){
             Swal.fire({
                 title: 'ทำรายการ?',
                 text: "ต้องการลบข้อมูล!",
@@ -104,7 +98,7 @@ export default {
                 confirmButtonText: 'Yes'
             }).then(async(result) => {
                 if (result.isConfirmed) {
-                    await service({ method: 'delete', url: `/services/${item.id}`, data: [], params: [] })
+                    await service({ method: 'delete', url: `/packet/${item.id}`, data: [], params: [] })
                     .then((response) => {
                         if(response.status == "success"){
                             Swal.fire({
@@ -127,18 +121,7 @@ export default {
                     });
                 }
             })
-        },async getDataGroup() {
-            this.loading = true
-            await service({ method: 'get', url: `/services/group`, data: [], params: [] })
-            .then((response) => {
-                // console.log(response)
-                this.servicesGroup = response.data
-                // this.loading = false
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-        },
+        }
     },
     mounted() {
         this.getData()
@@ -150,11 +133,11 @@ export default {
     <div>
         <div mode="out-in">
             <VRow class="mb-3">
-                <VCol><h1>จัดการของรางวัล</h1></VCol>
+                <VCol><h1>จัดการแพ็คเกจ</h1></VCol>
                 <VCol md="2" class="text-end">
                     <VBtn @click="openModal()">
                         <VIcon start icon="tabler-square-rounded-plus-filled"/>
-                        เพิ่มของรางวัล
+                        เพิ่มแพ็คเกจ
                     </VBtn>
                 </VCol>
             </VRow>
@@ -169,31 +152,28 @@ export default {
             <VTable fixed-header density="compact" class="text-no-wrap">
                 <thead>
                     <tr>
-                        <th style="text-align: start;">บริการ</th>
+                        <th style="text-align: start;">หัวข้อ</th>
                         <th style="text-align: start;">รายละเอียด</th>
-                        <th style="text-align: start;">ค่าบริการ</th>
-                        <th style="text-align: center;">สถานะ</th>
+                        <th style="text-align: start;">ราคา</th>
+                        <th style="text-align: start;">จำนวน</th>
                         <th style="text-align: center;">วันที่สร้าง</th>
                         <th style="text-align: center;">แก้ไข</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="item of services">
+                    <tr v-for="item of packets">
                         <td style="text-align: start;">{{ item.title }}</td>
                         <td style="text-align: start;">{{ item.detail }}</td>
                         <td style="text-align: start;">{{ item.price }}</td>
+                        <td style="text-align: start;">{{ item.count }}</td>
                         <td style="text-align: center;">
-                            <div v-if="item.status == true"><VChip color="success">ใช้งาน</VChip></div>
-                            <div v-if="item.status == false"><VChip color="error">ไม่ใช้งาน</VChip></div>
+                            {{ thaiDateNotime(item.created_date) }}
                         </td>
                         <td style="text-align: center;">
-                            {{ thaiDateNotime(item.create_date) }}
-                        </td>
-                        <td style="text-align: center;">
-                            <VBtn size="small" color="error" @click="deleteService(item)">
+                            <VBtn size="small" color="error" @click="deletePacket(item)">
                                 <VIcon start icon="tabler-trash"/> ลบ
                             </VBtn>
-                            <VBtn size="small" color="primary" @click=" service = item , show = true">
+                            <VBtn size="small" color="primary" @click=" packet = item , show = true">
                                 <VIcon start icon="tabler-edit"/> แก้ไข
                             </VBtn>
                         </td>
@@ -205,34 +185,22 @@ export default {
             <DialogCloseBtn @click="show = false" />
             <VCard>
                 <VCardTitle>
-                    จัดการค่าบริการ
+                    จัดการแพ็คเกจ
                 </VCardTitle>
                 <VCardText>
                     <VRow>
                         <VCol cols="6" md="6">
-                            <VTextField type="text" v-model="service.title" label="บริการ" />
+                            <VTextField type="text" v-model="packet.title" label="แพ็คเกจ" />
                         </VCol>
                         <VCol cols="6" md="6">
-                            <VTextField type="number" v-model="service.price" label="ราคาบริการ" />
+                            <VTextField type="number" v-model="packet.price" label="ราคา" />
                         </VCol>
                         <VCol cols="12" md="12">
-                            <VTextField type="text" v-model="service.detail" label="รายละเอียด" />
+                            <VTextField type="text" v-model="packet.detail" label="รายละเอียด" />
                         </VCol>
                         <VCol cols="12" md="12">
-                            <VSelect
-                                v-model="service.service_group_id"
-                                :items="servicesGroup"
-                                item-title="name"
-                                item-value="id"
-                                label="Select"
-                                persistent-hint
-                                return-object
-                                single-line
-                            />
-                            <!-- <VTextField type="text" v-model="service.detail" label="รายละเอียด" /> -->
+                            <VTextField type="number" v-model="packet.count" label="จำนวนการล้าง" />
                         </VCol>
-                        
-                        <!-- servicesGroup -->
                     </VRow>
                 </VCardText>
                 <VCardText class="d-flex justify-end flex-wrap gap-3">

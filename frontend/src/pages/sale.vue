@@ -26,7 +26,8 @@
         pay_bill : {
             bill_id : 0 ,
             pay : 'cash'
-        }
+        },
+        date : `${new Date().getFullYear()}-${String(new Date().getMonth()+1).padStart(2,'0')}-${String(new Date().getDate()).padStart(2,'0')}`,
       }
     },
     mounted() {
@@ -42,7 +43,10 @@
             this.show = true
         },
         async getBill() {
-            await service({ method: 'get', url: '/endbill/bill', data: [], params: [] })
+            let data = {
+                date : this.date
+            }
+            await service({ method: 'post', url: '/endbill/bill', data: data, params: [] })
             .then((response) => {
                 this.bills = response.data
             })
@@ -157,9 +161,34 @@
             .catch((error) => {
                 console.log(error);
             });
-           
+        },
+        async deleteItem(item){
+            Swal.fire({
+                title: 'ต้องการลบข้อมูล',
+                text: "ต้องการลบข้อมูลบิลนี้หรือไม่!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes!'
+            }).then(async(result) => {
+                if (result.isConfirmed) {
+                    await service({ method: 'delete', url: `/endbill/${item.id}`, data: [], params: [] })
+                    .then((response) => {
+                        if(response.status == "success"){
+                            Swal.fire({ icon: 'success', title: 'อัพเดทสำเร็จ', text: 'อัพเดทสถานะสำเร็จ !',})
+                            this.getBill()
+                        }else{
+                            Swal.fire({ icon: 'error', title: 'อัพเดทไม่สำเร็จ', text: 'กรุณาลองใหม่อีกครั้ง !',})
+                        }
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+                }
+            })
+            
         }
-        
     }
   }
 </script>
@@ -175,6 +204,16 @@
                     <VBtn color="primary" @click="openModal()" >
                         <VIcon start icon="tabler-receipt"/>
                         รับรถลูกค้า
+                    </VBtn>
+                </VCol>
+            </VRow>
+            <VRow>
+                <VCol class="text-start" cols="6" md="6">
+                    <VTextField type="date" v-model="date" label="ค้นหาตามวันที่" />
+                </VCol>
+                <VCol class="text-start" cols="6" md="6">
+                    <VBtn @click="getBill()">
+                        ค้นหา
                     </VBtn>
                 </VCol>
             </VRow>
@@ -240,6 +279,9 @@
                                 </VBtn>
                                 <VBtn target="_blank" :href="`/bill?bill_id=${item.id}`" size="small" color="success" block class="mt-1">
                                     บิล
+                                </VBtn>
+                                <VBtn @click="deleteItem(item)" size="small" color="error" block class="mt-1">
+                                    ลบรายการ
                                 </VBtn>
                             </td>
                         </td>

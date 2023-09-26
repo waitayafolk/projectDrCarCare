@@ -1,13 +1,9 @@
 const express = require('express');
 const app = express.Router();
 
-const endbill = require('./Module_endbill/endbill')
+const report = require('./Module_report/report')
 
-app.post('/', endbill.endbill)
-app.post('/bill', endbill.getBill)
-app.post('/update', endbill.update)
-app.post('/pay', endbill.pay)
-app.delete('/:id', endbill.del)
+app.post('/day', report.day)
 // app.post('/save-service', service.saveService)
 // app.delete('/:id', service.deleteService)
 // app.get('/service_id/:id', service.getServiceByid)
