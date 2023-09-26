@@ -221,19 +221,24 @@ exports.endbill = async (req, res) => {
                         "layout": "vertical",
                         "contents": [
                             {
-                                // "defaultAction": {
-                                //     "type": "uri",
-                                //     "label": "บิลค่าบริการ",
-                                //     "uri": url
-                                // },
-                                "type": "button",
-                                "action": {
+                                "type": "buttons",
+                                "imageAspectRatio": "rectangle",
+                                "imageSize": "cover",
+                                "imageBackgroundColor": "#FFFFFF",
+                                "title": "สมัครมาชิก",
+                                "text": "คลิกสมัครสมาชิก",
+                                "defaultAction": {
                                     "type": "uri",
-                                    "label": "บิลค่าบริการ",
-                                    "uri": url
+                                    "label": "View detail",
+                                    "uri": `http://188.166.221.231:3388/bill?bill_id=${check.id}`
                                 },
-                                "style": "primary",
-                                "color": "#E040FB"
+                                "actions": [
+                                    {
+                                    "type": "uri",
+                                    "label": "Register",
+                                    "uri": `http://188.166.221.231:3388/bill?bill_id=${check.id}`
+                                    }
+                                ]
                             }
                         ]
                     }
@@ -473,14 +478,24 @@ exports.update = async (req, res) => {
                         "layout": "vertical",
                         "contents": [
                             {
-                                "type": "button",
-                                "action": {
+                                "type": "buttons",
+                                "imageAspectRatio": "rectangle",
+                                "imageSize": "cover",
+                                "imageBackgroundColor": "#FFFFFF",
+                                "title": "สมัครมาชิก",
+                                "text": "คลิกสมัครสมาชิก",
+                                "defaultAction": {
                                     "type": "uri",
-                                    "label": "บิลค่าบริการ",
-                                    "uri": url
+                                    "label": "View detail",
+                                    "uri": `http://188.166.221.231:3388/bill?bill_id=${check.id}`
                                 },
-                                "style": "primary",
-                                "color": "#E040FB"
+                                "actions": [
+                                    {
+                                    "type": "uri",
+                                    "label": "Register",
+                                    "uri": `http://188.166.221.231:3388/bill?bill_id=${check.id}`
+                                    }
+                                ]
                             }
                         ]
                     }
