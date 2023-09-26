@@ -535,6 +535,18 @@ async function handleText(message, replyToken,userId) {
                   "size": "xl"
                 },
                 {
+                  "type": "text",
+                  "text": "ป้ายทะเบียน",
+                  "weight": "bold",
+                  "size": "xl"
+                },
+              {
+                  "type": "text",
+                  "text": check.licen ,
+                  "weight": "bold",
+                  "size": "xl"
+                },
+                {
                   "type": "box",
                   "layout": "baseline",
                   "margin": "md",

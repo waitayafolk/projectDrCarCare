@@ -30,9 +30,9 @@ exports.endbill = async (req, res) => {
             discount += item.discount
             price += item.price
         }
-        db.query(`INSERT INTO bill ( price, discount , total  , service_group_id , admin_id , customer_id , percen ,status , created_date , pay ) 
-        VALUES ($1 , $2 , $3  , $4 ,$5 ,$6 ,$7 , 'wait' , $8 , 'no' ) returning id ` , 
-        [price , discount ,  total ,  req.body.service_group_id ,  req.payload.id ,  req.body.customer_id , 0 , new Date()], async(err, result) => {
+        db.query(`INSERT INTO bill ( price, discount , total  , service_group_id , admin_id , customer_id , percen ,status , created_date , pay , licen ) 
+        VALUES ($1 , $2 , $3  , $4 ,$5 ,$6 ,$7 , 'wait' , $8 , 'no' , $9 ) returning id ` , 
+        [price , discount ,  total ,  req.body.service_group_id ,  req.payload.id ,  req.body.customer_id , 0 , new Date() , req.body.licen ], async(err, result) => {
             if (err) {
                 res.status(500).send('Internal Server Error');
             } else {
@@ -221,11 +221,11 @@ exports.endbill = async (req, res) => {
                         "layout": "vertical",
                         "contents": [
                             {
-                                "defaultAction": {
-                                    "type": "uri",
-                                    "label": "บิลค่าบริการ",
-                                    "uri": url
-                                },
+                                // "defaultAction": {
+                                //     "type": "uri",
+                                //     "label": "บิลค่าบริการ",
+                                //     "uri": url
+                                // },
                                 "type": "button",
                                 "action": {
                                     "type": "uri",
