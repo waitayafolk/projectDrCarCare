@@ -21,8 +21,8 @@ router.beforeEach( async(to, from , next) => {
     try{
         
         let isLogin = JSON.parse(localStorage.getItem('isLogin'))
-        // console.log(isLogin)
-        if (to.path == '/login_admin' || to.path == '/login' || to.path == '/register'){
+        // console.log(to.path)
+        if (to.path == '/login_admin' || to.path == '/login' || to.path == '/register' || to.path == '/bill'){
             next()
             // return true
         }else{

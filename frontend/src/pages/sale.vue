@@ -21,6 +21,7 @@
             customer_id : null , 
             service_group_id : null , 
             service : [] ,
+            licen : '' , 
         },
         bills : [] ,
         pay_bill : {
@@ -312,6 +313,9 @@
                             >
                             </v-autocomplete>
                             <!-- <VSelect v-model="data.customer_id" :items="customers" item-title="name" item-value="id" label="ลูกค้า" persistent-hint/> -->
+                        </VCol>
+                        <VCol class="text-start" cols="12" md="12">
+                            <VTextField type="text" v-model="data.licen" label="ป้ายทะเบียน" />
                         </VCol>
                         <VCol cols="12">
                             <VSelect v-model="data.service_group_id" :items="service_group" item-title="name" item-value="id" label="ประเภทต่าบริการ" persistent-hint/>
