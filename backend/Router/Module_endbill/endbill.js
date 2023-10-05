@@ -283,7 +283,6 @@ exports.getBill = async (req, res) => {
 
 exports.update = async (req, res) => {
     try{
-        let replyToken = 'nHuyWiB7yP5Zw52FIkcQobQuGDXCTA'
         let status = 'wait'
         if(req.body.percen == 100){
             status = 'success'

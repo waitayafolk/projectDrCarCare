@@ -89,7 +89,7 @@ exports.deleteServiceGroup = async (req, res) => {
 
 exports.getServiceGroup = async (req, res) => {
     try{
-        db.query(`SELECT * FROM service_group WHERE status != 'delete' Order by id DESC `, (err, result) => {
+        db.query(`SELECT * FROM service_group WHERE status != 'delete' Order by code ASC `, (err, result) => {
             if (err) {
                 res.status(500).send('Internal Server Error');
             } else {

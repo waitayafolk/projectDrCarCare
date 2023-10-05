@@ -26,6 +26,8 @@ export default {
             datestart : `${new Date().getFullYear()}-${String(new Date().getMonth()+1).padStart(2,'0')}-${String(new Date().getDate()).padStart(2,'0')}`,
             dateend : `${new Date().getFullYear()}-${String(new Date().getMonth()+1).padStart(2,'0')}-${String(new Date().getDate()).padStart(2,'0')}` ,
             totalDay : 0 ,
+            totalCash : 0 ,
+            totalCredit : 0 ,
         };
     },
     methods: {
@@ -39,7 +41,11 @@ export default {
             await service({ method: 'post', url: `/report/day`, data: data, params: [] })
             .then((response) => {
                 this.totalDay = 0 
+                this.totalCash = 0 
+                this.totalCredit = 0 
                 for(let item of response.data){
+                    this.totalCash += item.cash
+                    this.totalCredit += item.credit
                     this.totalDay += item.total
                 }
                 this.report_day = response.data
@@ -89,18 +95,24 @@ export default {
                 <thead>
                     <tr>
                         <th style="text-align: start;">วันที่</th>
+                        <th style="text-align: end;">เงินสด</th>
+                        <th style="text-align: end;">เงินโอน</th>
                         <th style="text-align: end;">ยอดรวม</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="item of report_day">
                         <td style="text-align: start;">{{ thaiDateNotime(item.date) }}</td>
+                        <td style="text-align: end;">{{ derlimiter(item.cash) }}</td>
+                        <td style="text-align: end;">{{ derlimiter(item.credit) }}</td>
                         <td style="text-align: end;">{{ derlimiter(item.total) }}</td>
                     </tr>
                 </tbody>
                 <tbody>
                     <tr>
                         <td style="text-align: start;">รวม</td>
+                        <td style="text-align: end;">{{ derlimiter(totalCash) }}</td>
+                        <td style="text-align: end;">{{ derlimiter(totalCredit) }}</td>
                         <td style="text-align: end;">{{ derlimiter(totalDay) }}</td>
                     </tr>
                 </tbody>

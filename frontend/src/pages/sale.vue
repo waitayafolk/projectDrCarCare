@@ -145,7 +145,7 @@
         async payBill(item){
             this.openPay = true
             this.pay_bill.bill_id = item.id 
-            this.pay_bill.pay = {name : 'เงินสด' , value : 'cash'}
+            this.pay_bill.pay = 'cash'
         },
         async savePay(){
             await service({ method: 'post', url: `/endbill/pay`, data: this.pay_bill, params: [] })
@@ -272,10 +272,10 @@
                                 <VBtn size="small" color="primary" @click="detail = true; billDetail = item.detail " block class="mt-1">
                                     รายการ
                                 </VBtn>
-                                <VBtn :disabled="item.percen == 100 ? true : false" size="small" color="info" @click="updatePercen(30 , item.id)" block class="mt-1">
+                                <VBtn :disabled="item.percen == 100 ? true : false" size="small" :color="Number(item.percen) < 30 ? 'error' : 'success'" @click="updatePercen(30 , item.id)" block class="mt-1">
                                     สำเร็จ 30%
                                 </VBtn>
-                                <VBtn :disabled="item.percen == 100 ? true : false" size="small" color="info" @click="updatePercen(100 , item.id)" block class="mt-1">
+                                <VBtn :disabled="item.percen == 100 ? true : false" size="small" :color="Number(item.percen) < 100 ? 'error' : 'success'" @click="updatePercen(100 , item.id)" block class="mt-1">
                                     สำเร็จ 100%
                                 </VBtn>
                                 <VBtn target="_blank" :href="`/bill?bill_id=${item.id}`" size="small" color="success" block class="mt-1">

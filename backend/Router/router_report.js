@@ -4,6 +4,9 @@ const app = express.Router();
 const report = require('./Module_report/report')
 
 app.post('/day', report.day)
+app.post('/month', report.month)
+app.post('/dashbord', report.dashbord)
+
 // app.post('/save-service', service.saveService)
 // app.delete('/:id', service.deleteService)
 // app.get('/service_id/:id', service.getServiceByid)
