@@ -807,7 +807,7 @@ function handleLocation(message, replyToken) {
 }
 
 function handleSticker(message, replyToken) {
-  return replyText(replyToken, 'http://iot.rmu.ac.th/linehospital/จองคิว/date.php');
+  return replyText(replyToken, '');
 }
 
 app.get('/download_csv',(req, res) => {

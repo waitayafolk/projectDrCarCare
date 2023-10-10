@@ -1,197 +1,274 @@
 <script>
-  import service from '@/plugins/axios';
-  import Swal from 'sweetalert2'
-  import { thaiDateNotime }from "@/thaiDateNotime";
-  export default {
-    components: {
-      // useLoading
-    },
-    data() {
-      return {
-        openPay : false , 
-        thaiDateNotime,
-        tital : 'All the best for your new project.' ,
-        customers : [] , 
-        service_group : [],
-        service : [] , 
-        show : false ,
-        detail : false ,
-        billDetail : [],
-        data : {
-            customer_id : null , 
-            service_group_id : null , 
-            service : [] ,
-            licen : '' , 
+    import service from '@/plugins/axios';
+    import Swal from 'sweetalert2'
+    import { thaiDateNotime }from "@/thaiDateNotime";
+    export default {
+        components: {
+        // useLoading
         },
-        bills : [] ,
-        pay_bill : {
-            bill_id : 0 ,
-            pay : 'cash'
+        data() {
+        return {
+            showPacket : false , 
+            openPay : false , 
+            thaiDateNotime,
+            tital : 'All the best for your new project.' ,
+            customers : [] , 
+            service_group : [],
+            service : [] , 
+            show : false ,
+            detail : false ,
+            billDetail : [],
+            data : {
+                customer_id : null , 
+                service_group_id : null , 
+                service : [] ,
+                licen : '' , 
+            },
+            dataPack : {
+                packet_id : null , 
+                service_group_id : null , 
+                service : [] ,
+                licen : '' , 
+            },
+            packet : [] ,
+            bills : [] ,
+            pay_bill : {
+                bill_id : 0 ,
+                pay : 'cash'
+            },
+            date : `${new Date().getFullYear()}-${String(new Date().getMonth()+1).padStart(2,'0')}-${String(new Date().getDate()).padStart(2,'0')}`,
+        }
         },
-        date : `${new Date().getFullYear()}-${String(new Date().getMonth()+1).padStart(2,'0')}-${String(new Date().getDate()).padStart(2,'0')}`,
-      }
-    },
-    mounted() {
-        this.getBill()
-        this.getDataCuctomer()
-        this.getDataServiceGroup()
-    },
-    methods: {
-        async openModal(){
-            this.data.customer_id = null 
-            this.data.service_group_id = null 
-            this.data.service = []
-            this.show = true
+        mounted() {
+            this.getBill()
+            this.getPacketSale()
+            this.getDataCuctomer()
+            this.getDataServiceGroup()
         },
-        async getBill() {
-            let data = {
-                date : this.date
-            }
-            await service({ method: 'post', url: '/endbill/bill', data: data, params: [] })
-            .then((response) => {
-                this.bills = response.data
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-        },
-        async getDataCuctomer() {
-            await service({ method: 'get', url: '/customers', data: [], params: [] })
-            .then((response) => {
-                for(let item of response.data){
-                    item.name = `${item.name} : ${item.mobile}` 
-                }
-                this.customers = response.data
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-        },
-        async getDataServiceGroup() {
-            await service({ method: 'get', url: '/services/group', data: [], params: [] })
-            .then((response) => {
-                this.service_group = response.data
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-        },
-        async getDataService() {
-            await service({ method: 'get', url: `/services/service_id/${this.data.service_group_id}`, data: [], params: [] })
-            .then((response) => {
-                this.service = response.data
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-        },
-        async choose(item){
-            let index = this.data.service.findIndex(data => data.id === item.id);
-            if(index == -1){
-                this.data.service.push({
-                    id : item.id , 
-                    price : item.price ,
-                    discount : 0,
-                    name : item.title 
+        methods: {
+            async openModal(){
+                this.data.customer_id = null 
+                this.data.service_group_id = null 
+                this.data.service = []
+                this.show = true
+            },
+            async openModalPacket(){
+                this.dataPack.packet_id = null 
+                this.dataPack.service_group_id = null 
+                this.dataPack.service = []
+                this.showPacket = true
+            },
+            async getPacketSale() {
+                await service({ method: 'get', url: '/packet/packet-sale', data: [], params: [] })
+                .then((response) => {
+                    for(let item of response.data ){
+                        item.name = `ป้ายทะเบียน ${item.licen} : ${item.name} : ${item.mobile} : จำนวนคงเหลือ ${item.count} `
+                    }
+                    // console.log(response.data)
+                    this.packet = response.data
                 })
-            }
-        },
-        async deleteArray (item){
-            let index = this.data.service.findIndex(data => data.id === item.id);
-            if(index > -1){
-                this.data.service.splice(index, 1);
-            }
-        },  
-        async saveDate (){
-            if(this.data.customer_id == null || this.data.service_group_id == null || this.data.service.length == 0){
-                this.show = false
-                return  Swal.fire({ icon: 'error', title: 'รับรถไม่สำเร็จ', text: 'กรุณากรอกข้อมูลให้ครบ !',})
-            }
-            await service({ method: 'post', url: `/endbill`, data: this.data , params: [] })
-            .then((response) => {
-                if(response.status == "success"){
-                    Swal.fire({ icon: 'success', title: 'รับรถสำเร็จ', text: 'รับรถรอล้างสำเร็จแล้ว !',})
-                    this.show = false
-                    this.getBill()
-                }else{
-                    Swal.fire({ icon: 'error', title: 'รับรถไม่สำเร็จ', text: 'กรุณาลองใหม่อีกครั้ง !',})
-                    this.show = false
+                .catch((error) => {
+                    console.log(error);
+                });
+            },
+            async getBill() {
+                let data = {
+                    date : this.date
                 }
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-        },
-        async updatePercen(percen , bill_id){
-            let data = {
-                percen : percen , 
-                bill_id : bill_id
-            }
-            await service({ method: 'post', url: `/endbill/update`, data: data, params: [] })
-            .then((response) => {
-                if(response.status == "success"){
-                    Swal.fire({ icon: 'success', title: 'อัพเดทสำเร็จ', text: 'อัพเดทสถานะสำเร็จ !',})
-                    this.show = false
-                    this.getBill()
-                }else{
-                    Swal.fire({ icon: 'error', title: 'อัพเดทไม่สำเร็จ', text: 'กรุณาลองใหม่อีกครั้ง !',})
-                    this.show = false
-                }
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-        },
-        async payBill(item){
-            this.openPay = true
-            this.pay_bill.bill_id = item.id 
-            this.pay_bill.pay = 'cash'
-        },
-        async savePay(){
-            await service({ method: 'post', url: `/endbill/pay`, data: this.pay_bill, params: [] })
-            .then((response) => {
-                if(response.status == "success"){
-                    Swal.fire({ icon: 'success', title: 'อัพเดทสำเร็จ', text: 'อัพเดทสถานะสำเร็จ !',})
-                     this.openPay = false
-                    this.getBill()
-                }else{
-                    Swal.fire({ icon: 'error', title: 'อัพเดทไม่สำเร็จ', text: 'กรุณาลองใหม่อีกครั้ง !',})
-                     this.openPay = false
-                }
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-        },
-        async deleteItem(item){
-            Swal.fire({
-                title: 'ต้องการลบข้อมูล',
-                text: "ต้องการลบข้อมูลบิลนี้หรือไม่!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes!'
-            }).then(async(result) => {
-                if (result.isConfirmed) {
-                    await service({ method: 'delete', url: `/endbill/${item.id}`, data: [], params: [] })
-                    .then((response) => {
-                        if(response.status == "success"){
-                            Swal.fire({ icon: 'success', title: 'อัพเดทสำเร็จ', text: 'อัพเดทสถานะสำเร็จ !',})
-                            this.getBill()
-                        }else{
-                            Swal.fire({ icon: 'error', title: 'อัพเดทไม่สำเร็จ', text: 'กรุณาลองใหม่อีกครั้ง !',})
-                        }
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                    });
-                }
-            })
+                await service({ method: 'post', url: '/endbill/bill', data: data, params: [] })
+                .then((response) => {
+                    this.bills = response.data
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+            },
+            async getDataCuctomer() {
+                await service({ method: 'get', url: '/customers', data: [], params: [] })
+                .then((response) => {
+                    for(let item of response.data){
+                        item.name = `${item.name} : ${item.mobile}` 
+                    }
+                    this.customers = response.data
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+            },
+            async getDataServiceGroup() {
+                await service({ method: 'get', url: '/services/group', data: [], params: [] })
+                .then((response) => {
+                    this.service_group = response.data
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+            },
+            async getDataService() {
+                await service({ method: 'get', url: `/services/service_id/${this.data.service_group_id}`, data: [], params: [] })
+                .then((response) => {
+                    this.service = response.data
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+            },
+            async getDataServicePacket() {
+                await service({ method: 'get', url: `/services/service_id/${this.dataPack.service_group_id}`, data: [], params: [] })
+                .then((response) => {
+                    this.service = response.data
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+            },
             
+            async choose(item){
+                let index = this.data.service.findIndex(data => data.id === item.id);
+                if(index == -1){
+                    this.data.service.push({
+                        id : item.id , 
+                        price : item.price ,
+                        discount : 0,
+                        name : item.title 
+                    })
+                }
+            },
+            async choosePacket(item){
+                let index = this.dataPack.service.findIndex(data => data.id === item.id);
+                if(index == -1){
+                    this.dataPack.service.push({
+                        id : item.id , 
+                        price : item.price ,
+                        discount : 0,
+                        name : item.title 
+                    })
+                }
+            },
+            async deleteArray (item){
+                let index = this.data.service.findIndex(data => data.id === item.id);
+                if(index > -1){
+                    this.data.service.splice(index, 1);
+                }
+            },  
+            async deleteArrayPacket (item){
+                let index = this.dataPack.service.findIndex(data => data.id === item.id);
+                if(index > -1){
+                    this.dataPack.service.splice(index, 1);
+                }
+            },  
+            async saveDate (){
+                if(this.data.customer_id == null || this.data.service_group_id == null || this.data.service.length == 0){
+                    this.show = false
+                    return  Swal.fire({ icon: 'error', title: 'รับรถไม่สำเร็จ', text: 'กรุณากรอกข้อมูลให้ครบ !',})
+                }
+                await service({ method: 'post', url: `/endbill`, data: this.data , params: [] })
+                .then((response) => {
+                    if(response.status == "success"){
+                        Swal.fire({ icon: 'success', title: 'รับรถสำเร็จ', text: 'รับรถรอล้างสำเร็จแล้ว !',})
+                        this.show = false
+                        this.getBill()
+                    }else{
+                        Swal.fire({ icon: 'error', title: 'รับรถไม่สำเร็จ', text: 'กรุณาลองใหม่อีกครั้ง !',})
+                        this.show = false
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+            },
+            async saveDatePacket (){
+                if(this.dataPack.packet_id == null || this.dataPack.service_group_id == null || this.dataPack.service.length == 0){
+                    this.showPacket = false
+                    return  Swal.fire({ icon: 'error', title: 'รับรถไม่สำเร็จ', text: 'กรุณากรอกข้อมูลให้ครบ !',})
+                }
+                await service({ method: 'post', url: `/endbill/packet`, data: this.dataPack , params: [] })
+                .then((response) => {
+                    if(response.status == "success"){
+                        Swal.fire({ icon: 'success', title: 'รับรถสำเร็จ', text: 'รับรถรอล้างสำเร็จแล้ว !',})
+                        this.showPacket = false
+                        this.getBill()
+                        this.getPacketSale()
+                    }else{
+                        Swal.fire({ icon: 'error', title: 'รับรถไม่สำเร็จ', text: 'กรุณาลองใหม่อีกครั้ง !',})
+                        this.showPacket = false
+                        this.getPacketSale()
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+            },
+            async updatePercen(percen , bill_id){
+                let data = {
+                    percen : percen , 
+                    bill_id : bill_id
+                }
+                await service({ method: 'post', url: `/endbill/update`, data: data, params: [] })
+                .then((response) => {
+                    if(response.status == "success"){
+                        Swal.fire({ icon: 'success', title: 'อัพเดทสำเร็จ', text: 'อัพเดทสถานะสำเร็จ !',})
+                        this.show = false
+                        this.getBill()
+                    }else{
+                        Swal.fire({ icon: 'error', title: 'อัพเดทไม่สำเร็จ', text: 'กรุณาลองใหม่อีกครั้ง !',})
+                        this.show = false
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+            },
+            async payBill(item){
+                this.openPay = true
+                this.pay_bill.bill_id = item.id 
+                this.pay_bill.pay = 'cash'
+            },
+            async savePay(){
+                await service({ method: 'post', url: `/endbill/pay`, data: this.pay_bill, params: [] })
+                .then((response) => {
+                    if(response.status == "success"){
+                        Swal.fire({ icon: 'success', title: 'อัพเดทสำเร็จ', text: 'อัพเดทสถานะสำเร็จ !',})
+                        this.openPay = false
+                        this.getBill()
+                    }else{
+                        Swal.fire({ icon: 'error', title: 'อัพเดทไม่สำเร็จ', text: 'กรุณาลองใหม่อีกครั้ง !',})
+                        this.openPay = false
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+            },
+            async deleteItem(item){
+                Swal.fire({
+                    title: 'ต้องการลบข้อมูล',
+                    text: "ต้องการลบข้อมูลบิลนี้หรือไม่!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes!'
+                }).then(async(result) => {
+                    if (result.isConfirmed) {
+                        await service({ method: 'delete', url: `/endbill/${item.id}`, data: [], params: [] })
+                        .then((response) => {
+                            if(response.status == "success"){
+                                Swal.fire({ icon: 'success', title: 'อัพเดทสำเร็จ', text: 'อัพเดทสถานะสำเร็จ !',})
+                                this.getBill()
+                            }else{
+                                Swal.fire({ icon: 'error', title: 'อัพเดทไม่สำเร็จ', text: 'กรุณาลองใหม่อีกครั้ง !',})
+                            }
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                        });
+                    }
+                })
+                
+            }
         }
     }
-  }
 </script>
 <template>
   <div>
@@ -201,11 +278,23 @@
                 <VCol cols="6" md="6">
                     รับรถเข้าล้าง
                 </VCol>
-                <VCol class="text-end" cols="6" md="6">
-                    <VBtn color="primary" @click="openModal()" >
-                        <VIcon start icon="tabler-receipt"/>
-                        รับรถลูกค้า
-                    </VBtn>
+                <VCol class="text-end " cols="6" md="6">
+                    <VRow>
+                        <VCol class="text-end " cols="6" md="6">
+                            <VBtn color="primary" @click="openModal()" >
+                                <VIcon start icon="tabler-receipt"/>
+                                รับรถลูกค้า
+                            </VBtn> 
+                        </VCol>
+                        <VCol class="text-end " cols="6" md="6">
+                            <VBtn color="primary" @click="openModalPacket()" >
+                                <VIcon start icon="tabler-receipt"/>
+                                ลูกค้าโปรโมชั่น
+                            </VBtn>
+                        </VCol>
+                    </VRow>
+                    
+                    
                 </VCol>
             </VRow>
             <VRow>
@@ -240,7 +329,7 @@
                     <tr v-for="item of bills">
                         <!-- <td style="text-align: start;">{{ item.id }}</td> -->
                         <td style="text-align: start;">{{ item.percen }} %</td>
-                        <td style="text-align: start;">{{ item.name_service }}</td>
+                        <td style="text-align: start;">{{ item.name_service == undefined ? 'ซื้อโปรโมชั่น' : item.name_service }}</td>
                         <td style="text-align: start;">{{ item.name_customer }}</td>
                         <td style="text-align: start;">{{ item.mobile }}</td>
                         <td style="text-align: start;">{{ item.name_admin }}</td>
@@ -297,6 +386,11 @@
                     รับรถลูกค้า
                 </VCardTitle>
                 <VCardText>
+                    <div style="padding: 20px;">
+                        <VBtn color="primary" @click="data.customer_id = 69 ; data.licen = 'ขาจร 101' ">
+                            ลูกค้าขาจร
+                        </VBtn>
+                    </div>
                     <VRow>
                         <VCol cols="12">
                             <v-autocomplete
@@ -439,6 +533,98 @@
                         ปิด
                     </VBtn>
                     <VBtn color="primary" @click="savePay()">
+                        บันทึกข้อมูล
+                    </VBtn>
+                </VCardText>
+            </VCard>
+        </VDialog>
+        <VDialog v-model="showPacket" max-width="800">
+            <DialogCloseBtn @click="showPacket = false" />
+            <VCard>
+                <VCardTitle>
+                    รับรถลูกค้าที่ซื้อแพ็คเกจ
+                </VCardTitle>
+                <VCardText>
+                    <VRow>
+                        <VCol cols="12">
+                            <v-autocomplete
+                                v-model="dataPack.packet_id"
+                                label="กรุณาเลือกรายชื่อลูกค้า"
+                                auto-select-first
+                                :items="packet"
+                                hide-no-data
+                                hide-selected
+                                item-title="name"
+                                item-value="id"
+                                item-no="bank_no"
+                                class="mb-3"
+                            >
+                            </v-autocomplete>
+                            <!-- <VSelect v-model="data.customer_id" :items="customers" item-title="name" item-value="id" label="ลูกค้า" persistent-hint/> -->
+                        </VCol>
+                        <VCol cols="12">
+                            <VSelect v-model="dataPack.service_group_id" :items="service_group" item-title="name" item-value="id" label="ประเภทต่าบริการ" persistent-hint/>
+                        </VCol>
+                        <VCol cols="12">
+                            <VBtn color="primary" @click="getDataServicePacket()">
+                                ค้นหาค่าบริการ
+                            </VBtn>
+                        </VCol>
+                        <VCol cols="12">
+                            <VTable fixed-header density="compact" class="text-no-wrap">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align: start;">id</th>
+                                        <th style="text-align: start;">บริการ</th>
+                                        <th style="text-align: end;">ค่าบริการ</th>
+                                        <th style="text-align: center;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="item of service">
+                                        <td style="text-align: start;">{{ item.id }}</td>
+                                        <td style="text-align: start;">{{ item.title }}</td>
+                                        <td style="text-align: end;">{{ item.price }}</td>
+                                        <td style="text-align: center;">
+                                            <VBtn variant="tonal" color="primary" @click="choosePacket(item)">
+                                                เลือก
+                                            </VBtn>   
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </VTable>
+                        </VCol>
+                        <div v-for="item of dataPack.service">
+                            <VRow style="padding: 5px;">
+                                <VCol style="padding: 15px;" cols="3" md="3">
+                                    บริการ : {{ item.name }}
+                                    <!-- <VTextField :disabled="true" type="text" v-model="item.name" label="บริการ" /> -->
+                                </VCol>
+                                <VCol cols="2" md="2">
+                                    <VTextField type="number" v-model="item.price" label="ค่าบริการ" />
+                                </VCol>
+                                <VCol cols="2" md="2">
+                                    <VTextField type="number" v-model="item.discount" label="ส่วนลด" />
+                                </VCol>
+                                <VCol style="padding: 15px;" cols="3" md="3">
+                                    รวม : {{ item.price -  item.discount}}
+                                </VCol>
+                                <VCol cols="1" md="1">
+                                    <VBtn variant="tonal" color="error" @click="deleteArrayPacket(item)">
+                                        ลบ
+                                    </VBtn>   
+                                    <!-- <VTextField type="number" v-model="item.discount" label="ส่วนลด" /> -->
+                                </VCol>
+                            </VRow>
+                            
+                        </div>
+                    </VRow>
+                </VCardText>
+                <VCardText class="d-flex justify-end flex-wrap gap-3">
+                    <VBtn variant="tonal" color="secondary" @click="showPacket = false">
+                        ปิด
+                    </VBtn>
+                    <VBtn color="primary" @click="saveDatePacket()">
                         บันทึกข้อมูล
                     </VBtn>
                 </VCardText>

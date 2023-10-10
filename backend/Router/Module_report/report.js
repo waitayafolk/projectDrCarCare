@@ -54,6 +54,34 @@ exports.day = async (req, res) => {
     }
 }
 
+exports.getBill = async (req, res) => {
+    try{
+        
+        // let date_now = `${new Date().getFullYear()}-${String(new Date().getMonth()+1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2, '0')}`
+        db.query(`SELECT bill.* , customer.mobile , customer.name as name_customer , admin.name as name_admin , service_group.name as name_service FROM bill 
+                    LEFT JOIN customer on bill.customer_id = customer.id
+                    LEFT JOIN admin on bill.admin_id = admin.id
+                    LEFT JOIN service_group on bill.service_group_id = service_group.id
+                    WHERE bill.status = 'success' AND DATE(bill.created_date) = $1
+                    Order by bill.id DESC `
+        ,[req.body.date],async (err, result) => {
+            if (err) {
+                res.status(500).send('Internal Server Error');
+            } else {
+                for(let bill of result.rows){
+                    bill.detail = (await db.query(`SELECT bill_detail.* , service.title FROM bill_detail LEFT JOIN service on service.id = bill_detail.service_id WHERE bill_id = $1 `, [bill.id])).rows
+                }
+                res.status(200).json({
+                    status: "success",
+                    data: result.rows,
+                });
+            }
+        });
+    }catch(err){
+         res.status(400).json({status: "error", message : err.message, });
+    }
+}
+
 exports.month = async (req, res) => {
     try{
         db.query(`SELECT SUM(bill.total) AS total , DATE(bill.created_date) AS Date 

@@ -16,6 +16,8 @@ export default {
     },
     data() {
         return {
+            bill_detail : [] ,
+            openDetail :false , 
             loading : true ,
             derlimiter,
             thaiDateNotime,
@@ -54,6 +56,21 @@ export default {
             .catch((error) => {
                 console.log(error);
             });
+        },
+        async detailData (item){
+            let date =  `${new Date(item.date).getFullYear()}-${String(new Date(item.date).getMonth()+1).padStart(2,'0')}-${String(new Date(item.date).getDate()).padStart(2,'0')}`
+            this.openDetail = true 
+            let data = {
+                date : date
+            }
+            await service({ method: 'post', url: '/report/getBill', data: data, params: [] })
+            .then((response) => {
+                this.bill_detail = response.data
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+            // console.log(date)
         },
         async searchData() {
             // console.log(this.date)
@@ -98,6 +115,7 @@ export default {
                         <th style="text-align: end;">เงินสด</th>
                         <th style="text-align: end;">เงินโอน</th>
                         <th style="text-align: end;">ยอดรวม</th>
+                        <th style="text-align: center;">รายละเอียด</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -106,6 +124,11 @@ export default {
                         <td style="text-align: end;">{{ derlimiter(item.cash) }}</td>
                         <td style="text-align: end;">{{ derlimiter(item.credit) }}</td>
                         <td style="text-align: end;">{{ derlimiter(item.total) }}</td>
+                        <th style="text-align: center;">
+                            <VBtn size="small" color="primary" @click="detailData(item)" block class="mt-1">
+                                รายละเอียด
+                            </VBtn>
+                        </th>
                     </tr>
                 </tbody>
                 <tbody>
@@ -114,10 +137,53 @@ export default {
                         <td style="text-align: end;">{{ derlimiter(totalCash) }}</td>
                         <td style="text-align: end;">{{ derlimiter(totalCredit) }}</td>
                         <td style="text-align: end;">{{ derlimiter(totalDay) }}</td>
+                       
                     </tr>
                 </tbody>
             </VTable>
         </VCard>
+        <VDialog v-model="openDetail" max-width="800">
+            <DialogCloseBtn @click="openDetail = false" />
+            <VCard>
+                <VCardTitle>
+                    รายการของวัน
+                </VCardTitle>
+                <VCardText>
+                    <VTable fixed-header density="compact" class="text-no-wrap">
+                        <VCol cols="12">
+                            <VTable fixed-header density="compact" class="text-no-wrap">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align: start;">ประเภท</th>
+                                        <th style="text-align: start;">ลูกค้า</th>
+                                        <th style="text-align: start;">เบอร์โทรลูกค้า</th>
+                                        <th style="text-align: end;">ค่าบริการ</th>
+                                        <th style="text-align: end;">ส่วนลด</th>
+                                        <th style="text-align: end;">รวม</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="item of bill_detail">
+                                        <td style="text-align: start;">{{ item.name_service == undefined ? 'ซื้อโปรโมชั่น' : item.name_service }}</td>
+                                        <td style="text-align: start;">{{ item.name_customer }}</td>
+                                        <td style="text-align: start;">{{ item.mobile }}</td>
+                                        <td style="text-align: end;">{{ item.price }}</td>
+                                        <td style="text-align: end;">{{ item.discount }}</td>
+                                        <td style="text-align: end;">{{ item.price - item.discount  }}</td>
+                                    </tr>
+                                </tbody>
+                            </VTable>
+                            
+                        </VCol>
+                    </VTable>
+                </VCardText>
+                <VCardText class="d-flex justify-end flex-wrap gap-3">
+                    <VBtn variant="tonal" color="secondary" @click="openDetail = false">
+                        ปิด
+                    </VBtn>
+                </VCardText>
+            </VCard>
+        </VDialog>
     </div>
     
 </template>

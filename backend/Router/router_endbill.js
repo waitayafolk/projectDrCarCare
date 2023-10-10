@@ -8,6 +8,8 @@ app.post('/bill', endbill.getBill)
 app.post('/update', endbill.update)
 app.post('/pay', endbill.pay)
 app.delete('/:id', endbill.del)
+app.post('/packet', endbill.endbillPacket)
+
 // app.post('/save-service', service.saveService)
 // app.delete('/:id', service.deleteService)
 // app.get('/service_id/:id', service.getServiceByid)

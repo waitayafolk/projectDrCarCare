@@ -6,6 +6,8 @@ const report = require('./Module_report/report')
 app.post('/day', report.day)
 app.post('/month', report.month)
 app.post('/dashbord', report.dashbord)
+app.post('/getBill', report.getBill)
+
 
 // app.post('/save-service', service.saveService)
 // app.delete('/:id', service.deleteService)

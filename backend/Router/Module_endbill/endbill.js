@@ -54,6 +54,10 @@ exports.endbill = async (req, res) => {
                             Order by bill.id DESC 
                 `, [bill_id])).rows[0]
 
+                if(check.line_id == undefined || check.line_id == null){
+                    return  res.status(200).json({ status: "success", message : 'เพิ่มข้อมูลสำเร็จ'  });
+                }
+
                 let years = new Date(check.created_date).getFullYear()
                 let month = String(new Date(check.created_date).getMonth()+1).padStart(2, '0') 
                 let day = String(new Date(check.created_date).getDate()).padStart(2, '0') 
@@ -253,6 +257,253 @@ exports.endbill = async (req, res) => {
     }
 }
 
+exports.endbillPacket = async (req, res) => {
+    try{
+        
+        let total = 0
+        let discount = 0
+        let price = 0
+        for(let item of req.body.service){
+            total += item.price - item.discount
+            discount += item.discount
+            price += item.price
+        }
+        let packet = (await db.query(`SELECT packet_buy.* , customer.mobile , customer.name 
+                                    FROM packet_buy 
+                                    LEFT JOIN customer on customer.id = packet_buy.customer_id
+                                    LEFT JOIN packet on packet.id = packet_buy.packet_id
+                                    WHERE packet_buy.id = $1 `, [req.body.packet_id])).rows[0]
+
+        await db.query(`UPDATE packet_buy SET count = $1 WHERE id = $2 `, [packet.count -1 , packet.id ])
+                                    
+        db.query(`INSERT INTO bill ( price, discount , total  , service_group_id , admin_id , customer_id , percen ,status , created_date , pay , licen ) 
+        VALUES ($1 , $2 , $3  , $4 ,$5 ,$6 ,$7 , 'wait' , $8 , 'no' , $9 ) returning id ` , 
+        [price , price ,  0 ,  req.body.service_group_id ,  req.payload.id ,  packet.customer_id , 0 , new Date() , packet.licen ], async(err, result) => {
+            if (err) {
+                res.status(500).send('Internal Server Error');
+            } else {
+                let bill_id = result.rows[0].id
+                for(let detail of req.body.service){
+                    await db.query(`INSERT INTO bill_detail ( bill_id , service_id , price  , discount , total , status  )
+                    VALUES ($1 , $2 , $3  , $4 ,$5 ,'use' )
+                    `, [bill_id , detail.id , detail.price , detail.discount , detail.price - detail.discount  ])
+                }
+
+                let check = (await db.query(`
+                SELECT bill.* , customer.mobile , customer.name as name_customer , customer.line_id,
+                admin.name as name_admin , service_group.name as name_service 
+                            FROM bill 
+                            LEFT JOIN customer on bill.customer_id = customer.id
+                            LEFT JOIN admin on bill.admin_id = admin.id
+                            LEFT JOIN service_group on bill.service_group_id = service_group.id
+                            WHERE bill.status != 'delete' AND bill.id = $1
+                            Order by bill.id DESC 
+                `, [bill_id])).rows[0]
+
+                if(check.line_id == undefined || check.line_id == null){
+                    return  res.status(200).json({ status: "success", message : 'เพิ่มข้อมูลสำเร็จ'  });
+                }
+
+                let years = new Date(check.created_date).getFullYear()
+                let month = String(new Date(check.created_date).getMonth()+1).padStart(2, '0') 
+                let day = String(new Date(check.created_date).getDate()).padStart(2, '0') 
+                let hours = String(new Date(check.created_date).getHours()+1).padStart(2, '0') 
+                let minute = String(new Date(check.created_date).getMinutes()).padStart(2, '0') 
+                let finitdate = `${years}-${month}-${day} ${hours}:${minute}`
+                let image = null 
+                if(check.percen == 30 ){
+                    image = 'https://7bb6-223-205-239-231.ngrok-free.app/upload/image/image2.png'
+                }else if(check.percen == 100 ){
+                    image = 'https://7bb6-223-205-239-231.ngrok-free.app/upload/image/image1.png'
+                }else if(check.percen == 0 ){
+                    image = 'https://example.com/flex/images/image.jpg'
+                }
+                let url = `http://188.166.221.231:3388/bill?bill_id=${bill_id}`
+                const message = {
+                "type": "flex",
+                "altText": "Dr.Carcare",
+                "contents": {
+                    "type": "bubble",
+                    "hero": {
+                        "type": "image",
+                        "url": `${image}`,
+                        // "https://images.unsplash.com/photo-1575936123452-b67c3203c357?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D&w=1000&q=80",
+                        "size": "full",
+                        "aspectRatio": "1:1",
+                        "aspectMode": "cover"
+                    },
+                    "body": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "contents": [
+                        {
+                        "type": "text",
+                        "text": "Dr.Carcare",
+                        "weight": "bold",
+                        "size": "xl"
+                        },
+                        {
+                        "type": "text",
+                        "text": "ล้างรถ",
+                        "weight": "bold",
+                        "size": "xl"
+                        },
+                        {
+                        "type": "box",
+                        "layout": "baseline",
+                        "margin": "md",
+                        "contents": [
+                            {
+                            "type": "text",
+                            "text": "เวลาประมาณล้างเสร็จ",
+                            "size": "sm"
+                            },
+                            {
+                            "type": "text",
+                            "text": `${thaiDateNotime(finitdate)}`,
+                            "margin": "sm",
+                            "size": "sm",
+                            }
+                        ]
+                        },
+                        {
+                        "type": "box",
+                        "layout": "baseline",
+                        "margin": "md",
+                        "contents": [
+                            {
+                            "type": "text",
+                            "text": "เปอร์เซ็นที่ล้างเสร็จ",
+                            "size": "sm"
+                            },
+                            {
+                            "type": "text",
+                            "text": `${check.percen}%`,
+                            "margin": "sm",
+                            "size": "sm",
+                            }
+                        ]
+                        },
+                        {
+                        "type": "box",
+                        "layout": "baseline",
+                        "margin": "md",
+                        "contents": [
+                            {
+                            "type": "text",
+                            "text": "ราคา",
+                            "size": "sm"
+                            },
+                            {
+                            "type": "text",
+                            "text": `${check.price.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} บาท`,
+                            "margin": "sm",
+                            "size": "sm",
+                            }
+                        ]
+                        },
+                        {
+                        "type": "box",
+                        "layout": "baseline",
+                        "margin": "md",
+                        "contents": [
+                            {
+                            "type": "text",
+                            "text": "ส่วนลด",
+                            "size": "sm"
+                            },
+                            {
+                            "type": "text",
+                            "text": `${check.discount.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} บาท`,
+                            "margin": "sm",
+                            "size": "sm",
+                            }
+                        ]
+                        },
+                        {
+                        "type": "box",
+                        "layout": "baseline",
+                        "margin": "md",
+                        "contents": [
+                            {
+                            "type": "text",
+                            "text": "ยอดรวม",
+                            "size": "sm"
+                            },
+                            {
+                            "type": "text",
+                            "text": `${check.total.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} บาท`,
+                            "margin": "sm",
+                            "size": "sm",
+                            }
+                        ]
+                        },
+                        {
+                            "type": "separator",
+                            "color": "#000000"
+                        },
+                        {
+                            "type": "separator",
+                            "color": "#000000"
+                        },
+                        {
+                            "type": "box",
+                            "layout": "baseline",
+                            "margin": "md",
+                            "contents": [
+                                {
+                                "type": "text",
+                                "text": "การชำระ",
+                                "size": "sm"
+                                },
+                                {
+                                "type": "text",
+                                "text": `ยังไม่ชำระ`,
+                                "margin": "sm",
+                                "size": "sm",
+                                }
+                            ]
+                        },
+                    ]
+                    },
+                    "footer": {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                            {
+                                // "defaultAction": {
+                                //     "type": "uri",
+                                //     "label": "บิลค่าบริการ",
+                                //     "uri": url
+                                // },
+                                "type": "button",
+                                "action": {
+                                    "type": "uri",
+                                    "label": "บิลค่าบริการ",
+                                    "uri": url
+                                },
+                                "style": "primary",
+                                "color": "#E040FB"
+                            }
+                        ]
+                    }
+                    
+                }
+                }
+                
+                res.status(200).json({
+                    status: "success",
+                    message : 'เพิ่มข้อมูลสำเร็จ'
+                });
+                return replyTemplate(check.line_id, message);
+            }
+        });
+    }catch(err){
+         res.status(400).json({status: "error", message : err.message, });
+    }
+}
+
+
 exports.getBill = async (req, res) => {
     try{
         
@@ -303,6 +554,10 @@ exports.update = async (req, res) => {
                             WHERE bill.status != 'delete' AND bill.id = $1
                             Order by bill.id DESC 
                 `, [req.body.bill_id])).rows[0]
+
+                if(check.line_id == undefined || check.line_id == null){
+                    return  res.status(200).json({ status: "success", message : 'เพิ่มข้อมูลสำเร็จ'  });
+                }
                 
                 let years = new Date(check.created_date).getFullYear()
                 let month = String(new Date(check.created_date).getMonth()+1).padStart(2, '0') 
