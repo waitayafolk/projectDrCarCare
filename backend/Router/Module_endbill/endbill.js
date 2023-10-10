@@ -278,7 +278,7 @@ exports.endbillPacket = async (req, res) => {
                                     
         db.query(`INSERT INTO bill ( price, discount , total  , service_group_id , admin_id , customer_id , percen ,status , created_date , pay , licen ) 
         VALUES ($1 , $2 , $3  , $4 ,$5 ,$6 ,$7 , 'wait' , $8 , 'no' , $9 ) returning id ` , 
-        [price , price ,  0 ,  req.body.service_group_id ,  req.payload.id ,  packet.customer_id , 0 , new Date() , packet.licen ], async(err, result) => {
+        [price , price ,  0 ,  0 ,  req.payload.id ,  packet.customer_id , 0 , new Date() , packet.licen ], async(err, result) => {
             if (err) {
                 res.status(500).send('Internal Server Error');
             } else {
