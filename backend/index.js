@@ -116,8 +116,8 @@ function thaiDateNotime (data){
       month: 'short',
       day: 'numeric',
       // weekday: 'long',
-      hour: 'numeric',
-      minute: 'numeric',
+      // hour: 'numeric',
+      // minute: 'numeric',
       // second: 'numeric',
   })
   // console.log(result)
