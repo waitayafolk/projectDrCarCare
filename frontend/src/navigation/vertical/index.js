@@ -19,7 +19,7 @@ export default [
     ]
   },
   {
-    title: 'ผู้ใช้งานระบบ',
+    title: 'สมัครโปรโมชั่น / ผู้ใช้งานระบบ',
     icon: { icon: 'tabler-users' },
     show: true,
     children: [

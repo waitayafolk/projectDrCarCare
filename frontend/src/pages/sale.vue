@@ -8,6 +8,7 @@
         },
         data() {
         return {
+            user_rile_id : JSON.parse(localStorage.getItem('user_data')).id == null ? 10 : JSON.parse(localStorage.getItem('user_data')).id , 
             showPacket : false , 
             openPay : false , 
             thaiDateNotime,
@@ -18,17 +19,20 @@
             show : false ,
             detail : false ,
             billDetail : [],
+            admins : [], 
             data : {
                 customer_id : null , 
                 service_group_id : null , 
                 service : [] ,
                 licen : '' , 
+                admin_id : null
             },
             dataPack : {
                 packet_id : null , 
                 service_group_id : null , 
                 service : [] ,
                 licen : '' , 
+                admin_id : null
             },
             packet : [] ,
             bills : [] ,
@@ -43,19 +47,22 @@
             this.getBill()
             this.getPacketSale()
             this.getDataCuctomer()
+            this.getAdmin()
             this.getDataServiceGroup()
         },
         methods: {
             async openModal(){
                 this.data.customer_id = null 
+                this.data.admin_id = null 
                 this.data.service_group_id = null 
                 this.data.service = []
                 this.show = true
             },
             async openModalPacket(){
                 this.dataPack.packet_id = null 
-                this.dataPack.service_group_id = null 
-                this.dataPack.service = []
+                this.dataPack.admin_id = null 
+                this.dataPack.service_group_id = 3 
+                this.dataPack.service = [{id: 7, title: 'ล้างดูดฝุ่น',service_group_id: 3,discount: 0 , price : 200}]
                 this.showPacket = true
             },
             async getPacketSale() {
@@ -95,6 +102,19 @@
                     console.log(error);
                 });
             },
+            async getAdmin() {
+                await service({ method: 'get', url: '/admins', data: [], params: [] })
+                .then((response) => {
+                    // console.log(response.data)
+                    for(let item of response.data){
+                        item.name = `${item.username} : ${item.name}` 
+                    }
+                    this.admins = response.data
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+            },
             async getDataServiceGroup() {
                 await service({ method: 'get', url: '/services/group', data: [], params: [] })
                 .then((response) => {
@@ -114,6 +134,7 @@
                 });
             },
             async getDataServicePacket() {
+                // console.log(this.dataPack.service_group_id)
                 await service({ method: 'get', url: `/services/service_id/${this.dataPack.service_group_id}`, data: [], params: [] })
                 .then((response) => {
                     this.service = response.data
@@ -144,6 +165,7 @@
                         name : item.title 
                     })
                 }
+               
             },
             async deleteArray (item){
                 let index = this.data.service.findIndex(data => data.id === item.id);
@@ -158,6 +180,9 @@
                 }
             },  
             async saveDate (){
+                if(this.data.admin_id == null){
+                    this.data.admin_id = 1
+                }
                 if(this.data.customer_id == null || this.data.service_group_id == null || this.data.service.length == 0){
                     this.show = false
                     return  Swal.fire({ icon: 'error', title: 'รับรถไม่สำเร็จ', text: 'กรุณากรอกข้อมูลให้ครบ !',})
@@ -178,6 +203,9 @@
                 });
             },
             async saveDatePacket (){
+                if(this.dataPack.admin_id == null){
+                    this.dataPack.admin_id = 1
+                }
                 if(this.dataPack.packet_id == null || this.dataPack.service_group_id == null || this.dataPack.service.length == 0){
                     this.showPacket = false
                     return  Swal.fire({ icon: 'error', title: 'รับรถไม่สำเร็จ', text: 'กรุณากรอกข้อมูลให้ครบ !',})
@@ -370,8 +398,8 @@
                                 <VBtn target="_blank" :href="`/bill?bill_id=${item.id}`" size="small" color="success" block class="mt-1">
                                     บิล
                                 </VBtn>
-                                <VBtn @click="deleteItem(item)" size="small" color="error" block class="mt-1">
-                                    ลบรายการ
+                                <VBtn v-if="user_rile_id == 1" @click="deleteItem(item)" size="small" color="error" block class="mt-1">
+                                    ลบรายการ 
                                 </VBtn>
                             </td>
                         </td>
@@ -388,7 +416,7 @@
                 <VCardText>
                     <div style="padding: 20px;">
                         <VBtn color="primary" @click="data.customer_id = 69 ; data.licen = 'ขาจร 101' ">
-                            ลูกค้าขาจร
+                            ลูกค้าขาจรกด !
                         </VBtn>
                     </div>
                     <VRow>
@@ -410,6 +438,9 @@
                         </VCol>
                         <VCol class="text-start" cols="12" md="12">
                             <VTextField type="text" v-model="data.licen" label="ป้ายทะเบียน" />
+                        </VCol>
+                        <VCol cols="12">
+                            <VSelect v-model="data.admin_id" :items="admins" item-title="name" item-value="id" label="เลิอกพนักงานรับรถ" persistent-hint/>
                         </VCol>
                         <VCol cols="12">
                             <VSelect v-model="data.service_group_id" :items="service_group" item-title="name" item-value="id" label="ประเภทต่าบริการ" persistent-hint/>
@@ -563,10 +594,13 @@
                             <!-- <VSelect v-model="data.customer_id" :items="customers" item-title="name" item-value="id" label="ลูกค้า" persistent-hint/> -->
                         </VCol>
                         <VCol cols="12">
-                            <VSelect v-model="dataPack.service_group_id" :items="service_group" item-title="name" item-value="id" label="ประเภทต่าบริการ" persistent-hint/>
+                            <VSelect disabled v-model="dataPack.service_group_id" :items="service_group" item-title="name" item-value="id" label="ประเภทต่าบริการ" persistent-hint/>
                         </VCol>
                         <VCol cols="12">
-                            <VBtn color="primary" @click="getDataServicePacket()">
+                            <VSelect v-model="dataPack.admin_id" :items="admins" item-title="name" item-value="id" label="เลิอกพนักงานรับรถ" persistent-hint/>
+                        </VCol>
+                        <VCol cols="12">
+                            <VBtn disabled color="primary" @click="getDataServicePacket()">
                                 ค้นหาค่าบริการ
                             </VBtn>
                         </VCol>
@@ -576,8 +610,8 @@
                                     <tr>
                                         <th style="text-align: start;">id</th>
                                         <th style="text-align: start;">บริการ</th>
-                                        <th style="text-align: end;">ค่าบริการ</th>
-                                        <th style="text-align: center;"></th>
+                                        <th style="text-align: start;">ค่าบริการ</th>
+                                        <!-- <th style="text-align: center;"></th> -->
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -585,11 +619,11 @@
                                         <td style="text-align: start;">{{ item.id }}</td>
                                         <td style="text-align: start;">{{ item.title }}</td>
                                         <td style="text-align: end;">{{ item.price }}</td>
-                                        <td style="text-align: center;">
+                                        <!-- <td style="text-align: center;">
                                             <VBtn variant="tonal" color="primary" @click="choosePacket(item)">
                                                 เลือก
                                             </VBtn>   
-                                        </td>
+                                        </td> -->
                                     </tr>
                                 </tbody>
                             </VTable>
@@ -609,12 +643,11 @@
                                 <VCol style="padding: 15px;" cols="3" md="3">
                                     รวม : {{ item.price -  item.discount}}
                                 </VCol>
-                                <VCol cols="1" md="1">
+                                <!-- <VCol cols="1" md="1">
                                     <VBtn variant="tonal" color="error" @click="deleteArrayPacket(item)">
                                         ลบ
                                     </VBtn>   
-                                    <!-- <VTextField type="number" v-model="item.discount" label="ส่วนลด" /> -->
-                                </VCol>
+                                </VCol> -->
                             </VRow>
                             
                         </div>
