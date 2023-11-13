@@ -32,7 +32,7 @@ exports.endbill = async (req, res) => {
         }
         db.query(`INSERT INTO bill ( price, discount , total  , service_group_id , admin_id , customer_id , percen ,status , created_date , pay , licen ) 
         VALUES ($1 , $2 , $3  , $4 ,$5 ,$6 ,$7 , 'wait' , $8 , 'no' , $9 ) returning id ` , 
-        [price , discount ,  total ,  req.body.service_group_id ,  req.payload.id ,  req.body.customer_id , 0 , new Date() , req.body.licen ], async(err, result) => {
+        [price , discount ,  total ,  req.body.service_group_id ,  req.body.admin_id ,  req.body.customer_id , 0 , new Date() , req.body.licen ], async(err, result) => {
             if (err) {
                 res.status(500).send('Internal Server Error');
             } else {
@@ -218,6 +218,16 @@ exports.endbill = async (req, res) => {
                                 }
                             ]
                         },
+                        {
+                            "type": "button",
+                            "action": {
+                            "type": "uri",
+                            "label": "บิลค่าบริการ",
+                            "uri": url
+                            },
+                            "style": "primary",
+                            "color": "#E040FB"
+                        },
                     ]
                     },
                     "footer": {
@@ -225,19 +235,14 @@ exports.endbill = async (req, res) => {
                         "layout": "vertical",
                         "contents": [
                             {
-                                // "defaultAction": {
-                                //     "type": "uri",
-                                //     "label": "บิลค่าบริการ",
-                                //     "uri": url
-                                // },
-                                "type": "button",
-                                "action": {
-                                    "type": "uri",
-                                    "label": "บิลค่าบริการ",
-                                    "uri": url
-                                },
-                                "style": "primary",
-                                "color": "#E040FB"
+                              "type": "button",
+                              "style": "primary",
+                              "color": "#E040FB",
+                              "action": {
+                                "type": "message",
+                                "label": "Qrcode",
+                                "text": "Qrcode"
+                              }
                             }
                         ]
                     }
@@ -278,7 +283,7 @@ exports.endbillPacket = async (req, res) => {
                                     
         db.query(`INSERT INTO bill ( price, discount , total  , service_group_id , admin_id , customer_id , percen ,status , created_date , pay , licen ) 
         VALUES ($1 , $2 , $3  , $4 ,$5 ,$6 ,$7 , 'wait' , $8 , 'no' , $9 ) returning id ` , 
-        [price , price ,  0 ,  0 ,  req.payload.id ,  packet.customer_id , 0 , new Date() , packet.licen ], async(err, result) => {
+        [price , price ,  0 ,  0 ,  req.body.admin_id ,  packet.customer_id , 0 , new Date() , packet.licen ], async(err, result) => {
             if (err) {
                 res.status(500).send('Internal Server Error');
             } else {
@@ -716,11 +721,21 @@ exports.update = async (req, res) => {
                                 },
                                 {
                                 "type": "text",
-                                "text": `${check.pay == 'no' ? 'ยังไม่ชำระ' :'ชำระแล้ว'}`,
+                                "text": `ยังไม่ชำระ`,
                                 "margin": "sm",
                                 "size": "sm",
                                 }
                             ]
+                        },
+                        {
+                            "type": "button",
+                            "action": {
+                            "type": "uri",
+                            "label": "บิลค่าบริการ",
+                            "uri": url
+                            },
+                            "style": "primary",
+                            "color": "#E040FB"
                         },
                     ]
                     },
@@ -729,43 +744,16 @@ exports.update = async (req, res) => {
                         "layout": "vertical",
                         "contents": [
                             {
-                                // "defaultAction": {
-                                //     "type": "uri",
-                                //     "label": "บิลค่าบริการ",
-                                //     "uri": url
-                                // },
-                                "type": "button",
-                                "action": {
-                                    "type": "uri",
-                                    "label": "บิลค่าบริการ",
-                                    "uri": url
-                                },
-                                "style": "primary",
-                                "color": "#E040FB"
+                              "type": "button",
+                              "style": "primary",
+                              "color": "#E040FB",
+                              "action": {
+                                "type": "message",
+                                "label": "Qrcode",
+                                "text": "Qrcode"
+                              }
                             }
                         ]
-                        // "contents": [
-                        //     {
-                        //         "type": "buttons",
-                        //         "imageAspectRatio": "rectangle",
-                        //         "imageSize": "cover",
-                        //         "imageBackgroundColor": "#FFFFFF",
-                        //         "title": "สมัครมาชิก",
-                        //         "text": "คลิกสมัครสมาชิก",
-                        //         "defaultAction": {
-                        //             "type": "uri",
-                        //             "label": "View detail",
-                        //             "uri": `http://188.166.221.231:3388/bill?bill_id=${check.id}`
-                        //         },
-                        //         "actions": [
-                        //             {
-                        //             "type": "uri",
-                        //             "label": "Register",
-                        //             "uri": `http://188.166.221.231:3388/bill?bill_id=${check.id}`
-                        //             }
-                        //         ]
-                        //     }
-                        // ]
                     }
                 }
                 }

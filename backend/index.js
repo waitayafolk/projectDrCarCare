@@ -498,9 +498,9 @@ async function handleText(message, replyToken,userId) {
         let finitdate = `${years}-${month}-${day} ${hours}:${minute}`
         let image = null 
         if(check.percen == 30 ){
-          image = 'https://1482-223-205-227-4.ngrok-free.app/upload/image/image2.png'
+          image = 'https://7efb-2403-6200-8822-ae33-e991-de05-129d-e38d.ngrok-free.app/upload/image/image2.png'
         }else if(check.percen == 100 ){
-          image = 'https://1482-223-205-227-4.ngrok-free.app/upload/image/image1.png'
+          image = 'https://7efb-2403-6200-8822-ae33-e991-de05-129d-e38d.ngrok-free.app/upload/image/image1.png'
         }else if(check.percen == 0 ){
           image = 'https://example.com/flex/images/image.jpg'
         }
@@ -661,7 +661,17 @@ async function handleText(message, replyToken,userId) {
                       "size": "sm",
                       }
                   ]
-              },
+                },
+                {
+                  "type": "button",
+                    "action": {
+                      "type": "uri",
+                      "label": "บิลค่าบริการ",
+                      "uri": url
+                    },
+                    "style": "primary",
+                    "color": "#E040FB"
+                },
               ]
             },
             "footer": {
@@ -669,14 +679,14 @@ async function handleText(message, replyToken,userId) {
               "layout": "vertical",
               "contents": [
                   {
-                      "type": "button",
-                      "action": {
-                          "type": "uri",
-                          "label": "บิลค่าบริการ",
-                          "uri": url
-                      },
-                      "style": "primary",
-                      "color": "#E040FB"
+                    "type": "button",
+                    "style": "primary",
+                    "color": "#E040FB",
+                    "action": {
+                      "type": "message",
+                      "label": "Qrcode",
+                      "text": "Qrcode"
+                    }
                   }
               ]
             }
@@ -686,79 +696,87 @@ async function handleText(message, replyToken,userId) {
       }
       // console.log(bill)
     }
-  }else if (message.text == 'Promotion'){
-    const message = {
-      "type": "flex",
-      "altText": "Dr.Carcare",
-      "contents": {
-        "type": "bubble",
-        "body": {
-          "type": "box",
-          "layout": "vertical",
-          "contents": [
-            {
-              "type": "text",
-              "text": "Promotion",
-              "weight": "bold",
-              "size": "xl"
-            },
-            {
-              "type": "text",
-              "text": "ยังไม่มีโปรโมชั่น",
-              "weight": "bold",
-              "size": "xl"
-            },
-          ]
-        },
-        "footer": {
-          "type": "box",
-          "layout": "vertical",
-          "contents": [
-          ]
+    }else if (message.text == 'Promotion'){
+      const message = {
+        "type": "flex",
+        "altText": "Dr.Carcare",
+        "contents": {
+          "type": "bubble",
+          "body": {
+            "type": "box",
+            "layout": "vertical",
+            "contents": [
+              {
+                "type": "text",
+                "text": "Promotion",
+                "weight": "bold",
+                "size": "xl"
+              },
+              {
+                "type": "text",
+                "text": "ยังไม่มีโปรโมชั่น",
+                "weight": "bold",
+                "size": "xl"
+              },
+            ]
+          },
+          "footer": {
+            "type": "box",
+            "layout": "vertical",
+            "contents": [
+            ]
+          }
         }
       }
-    }
-    return replyTemplate(replyToken, message);
-  }else if (message.text == 'Member'){
-    const message = {
-      "type": "flex",
-      "altText": "Dr.Carcare",
-      "contents": {
-        "type": "bubble",
-        "body": {
-          "type": "box",
-          "layout": "vertical",
-          "contents": [
-            {
-              "type": "text",
-              "text": "Member",
-              "weight": "bold",
-              "size": "xl"
-            },
-            {
-              "type": "text",
-              "text": "ระบบสมาชิกจะมาเร็วๆนี้",
-              "weight": "bold",
-              "size": "xl"
-            },
-            {
-              "type": "text",
-              "text": "โปรดรอสักครู่",
-              "weight": "bold",
-              "size": "xl"
-            },
-          ]
-        },
-        "footer": {
-          "type": "box",
-          "layout": "vertical",
-          "contents": [
-          ]
+      return replyTemplate(replyToken, message);
+    }else if (message.text == 'Member'){
+      const message = {
+        "type": "flex",
+        "altText": "Dr.Carcare",
+        "contents": {
+          "type": "bubble",
+          "body": {
+            "type": "box",
+            "layout": "vertical",
+            "contents": [
+              {
+                "type": "text",
+                "text": "Member",
+                "weight": "bold",
+                "size": "xl"
+              },
+              {
+                "type": "text",
+                "text": "ระบบสมาชิกจะมาเร็วๆนี้",
+                "weight": "bold",
+                "size": "xl"
+              },
+              {
+                "type": "text",
+                "text": "โปรดรอสักครู่",
+                "weight": "bold",
+                "size": "xl"
+              },
+            ]
+          },
+          "footer": {
+            "type": "box",
+            "layout": "vertical",
+            "contents": [
+             
+            ]
+          }
         }
       }
+      return replyTemplate(replyToken, message);
+    }else if (message.text == 'Qrcode'){
+      const message = {
+        "type": "image",
+        "originalContentUrl": "https://7efb-2403-6200-8822-ae33-e991-de05-129d-e38d.ngrok-free.app/upload/image/qrcode.jpeg",
+        "previewImageUrl": "https://7efb-2403-6200-8822-ae33-e991-de05-129d-e38d.ngrok-free.app/upload/image/qrcode.jpeg"
+      }
+      return replyTemplate(replyToken, message);
     }
-    return replyTemplate(replyToken, message);
-  }
 //   if(message.text == 'สมัครสมาชิก'){
 //     let customer = (await conpool.query(`SELECT * FROM customer WHERE line_id = $1 AND status = true `, [userId])).rows[0]
 //     if(customer != undefined || customer != null){
