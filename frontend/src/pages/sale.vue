@@ -62,7 +62,7 @@
                 this.dataPack.packet_id = null 
                 this.dataPack.admin_id = null 
                 this.dataPack.service_group_id = 3 
-                this.dataPack.service = [{id: 7, title: 'ล้างดูดฝุ่น',service_group_id: 3,discount: 0 , price : 200}]
+                this.dataPack.service = [{id: 7, name: 'ล้างดูดฝุ่น',service_group_id: 3,discount: 0 , price : 200}]
                 this.showPacket = true
             },
             async getPacketSale() {
