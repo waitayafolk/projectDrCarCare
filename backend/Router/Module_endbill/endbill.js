@@ -66,9 +66,9 @@ exports.endbill = async (req, res) => {
                 let finitdate = `${years}-${month}-${day} ${hours}:${minute}`
                 let image = null 
                 if(check.percen == 30 ){
-                    image = 'https://1482-223-205-227-4.ngrok-free.app/upload/image/image2.png'
+                    image = 'https://043a-2403-6200-8822-2da5-935-568-8658-b2b0.ngrok-free.app/upload/image/image2.png'
                 }else if(check.percen == 100 ){
-                    image = 'https://1482-223-205-227-4.ngrok-free.app/upload/image/image1.png'
+                    image = 'https://043a-2403-6200-8822-2da5-935-568-8658-b2b0.ngrok-free.app/upload/image/image1.png'
                 }else if(check.percen == 0 ){
                     image = 'https://example.com/flex/images/image.jpg'
                 }
@@ -324,9 +324,9 @@ exports.endbillPacket = async (req, res) => {
                 // let finitdate = `${years}-${month}-${day} ${hours}:${minute}`
                 // let image = null 
                 // if(check.percen == 30 ){
-                //     image = 'https://1482-223-205-227-4.ngrok-free.app/upload/image/image2.png'
+                //     image = 'https://043a-2403-6200-8822-2da5-935-568-8658-b2b0.ngrok-free.app/upload/image/image2.png'
                 // }else if(check.percen == 100 ){
-                //     image = 'https://1482-223-205-227-4.ngrok-free.app/upload/image/image1.png'
+                //     image = 'https://043a-2403-6200-8822-2da5-935-568-8658-b2b0.ngrok-free.app/upload/image/image1.png'
                 // }else if(check.percen == 0 ){
                 //     image = 'https://example.com/flex/images/image.jpg'
                 // }
@@ -574,9 +574,9 @@ exports.update = async (req, res) => {
                 let finitdate = `${years}-${month}-${day} ${hours}:${minute}`
                 let image = null 
                 if(check.percen == 30 ){
-                    image = 'https://1482-223-205-227-4.ngrok-free.app/upload/image/image2.png'
+                    image = 'https://043a-2403-6200-8822-2da5-935-568-8658-b2b0.ngrok-free.app/upload/image/image2.png'
                 }else if(check.percen == 100 ){
-                    image = 'https://1482-223-205-227-4.ngrok-free.app/upload/image/image1.png'
+                    image = 'https://043a-2403-6200-8822-2da5-935-568-8658-b2b0.ngrok-free.app/upload/image/image1.png'
                 }else if(check.percen == 0 ){
                     image = 'https://example.com/flex/images/image.jpg'
                 }

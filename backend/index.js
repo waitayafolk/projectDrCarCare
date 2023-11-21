@@ -498,9 +498,9 @@ async function handleText(message, replyToken,userId) {
         let finitdate = `${years}-${month}-${day} ${hours}:${minute}`
         let image = null 
         if(check.percen == 30 ){
-          image = 'https://7efb-2403-6200-8822-ae33-e991-de05-129d-e38d.ngrok-free.app/upload/image/image2.png'
+          image = 'https://043a-2403-6200-8822-2da5-935-568-8658-b2b0.ngrok-free.app/upload/image/image2.png'
         }else if(check.percen == 100 ){
-          image = 'https://7efb-2403-6200-8822-ae33-e991-de05-129d-e38d.ngrok-free.app/upload/image/image1.png'
+          image = 'https://043a-2403-6200-8822-2da5-935-568-8658-b2b0.ngrok-free.app/upload/image/image1.png'
         }else if(check.percen == 0 ){
           image = 'https://example.com/flex/images/image.jpg'
         }
@@ -772,8 +772,8 @@ async function handleText(message, replyToken,userId) {
     }else if (message.text == 'Qrcode'){
       const message = {
         "type": "image",
-        "originalContentUrl": "https://7efb-2403-6200-8822-ae33-e991-de05-129d-e38d.ngrok-free.app/upload/image/qrcode.jpeg",
-        "previewImageUrl": "https://7efb-2403-6200-8822-ae33-e991-de05-129d-e38d.ngrok-free.app/upload/image/qrcode.jpeg"
+        "originalContentUrl": "https://043a-2403-6200-8822-2da5-935-568-8658-b2b0.ngrok-free.app/upload/image/qrcode.jpeg",
+        "previewImageUrl": "https://043a-2403-6200-8822-2da5-935-568-8658-b2b0.ngrok-free.app/upload/image/qrcode.jpeg"
       }
       return replyTemplate(replyToken, message);
     }
