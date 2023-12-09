@@ -106,10 +106,17 @@
                 await service({ method: 'get', url: '/admins', data: [], params: [] })
                 .then((response) => {
                     // console.log(response.data)
+                    let data = []
                     for(let item of response.data){
                         item.name = `${item.username} : ${item.name}` 
+                        if(item.id > 2 ){
+                            data.push(item)
+                        }
+                        // console.log(item.id)
+                     
                     }
-                    this.admins = response.data
+                    // console.log(data)
+                    this.admins = data
                 })
                 .catch((error) => {
                     console.log(error);
@@ -309,13 +316,13 @@
                 <VCol class="text-end " cols="6" md="6">
                     <VRow>
                         <VCol class="text-end " cols="6" md="6">
-                            <VBtn color="primary" @click="openModal()" >
+                            <VBtn size="large" color="warning" @click="openModal()" >
                                 <VIcon start icon="tabler-receipt"/>
                                 รับรถลูกค้า
                             </VBtn> 
                         </VCol>
                         <VCol class="text-end " cols="6" md="6">
-                            <VBtn color="primary" @click="openModalPacket()" >
+                            <VBtn size="large" color="info" @click="openModalPacket()" >
                                 <VIcon start icon="tabler-receipt"/>
                                 ลูกค้าโปรโมชั่น
                             </VBtn>
@@ -345,12 +352,16 @@
                         <th style="text-align: start;">เบอร์โทรลูกค้า</th>
                         <th style="text-align: start;">แอดมินผู้รับผิดชอบ</th>
                         <th style="text-align: end;">ค่าบริการ</th>
+                        <th style="text-align: end;"></th>
                         <th style="text-align: end;">ส่วนลด</th>
                         <th style="text-align: end;">รวม</th>
                         <th style="text-align: center;">การชำระ</th>
                         <th style="text-align: center;">สถานะ</th>
                         <th style="text-align: center;">วันที่รับรถ</th>
-                        <th style="text-align: center;">รายการ</th>
+                        <th style="text-align: center;"></th>
+                        <th style="text-align: center;"></th>
+                        <th style="text-align: center;"></th>
+                        <th style="text-align: center;"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -361,7 +372,15 @@
                         <td style="text-align: start;">{{ item.name_customer }}</td>
                         <td style="text-align: start;">{{ item.mobile }}</td>
                         <td style="text-align: start;">{{ item.name_admin }}</td>
-                        <td style="text-align: end;">{{ item.price }}</td>
+                        <td style="text-align: end;">
+                            {{ item.price }}
+                        </td>
+                        <td style="text-align: end;">
+                            <VBtn size="small" color="secondary" @click="detail = true; billDetail = item.detail " block class="mt-1">
+                                รายละเอียด
+                            </VBtn>
+                        </td>
+                      
                         <td style="text-align: end;">{{ item.discount }}</td>
                         <td style="text-align: end;">{{ item.total }}</td>
                         <th style="text-align: center;">
@@ -384,24 +403,43 @@
                         <td style="text-align: center;">
                             {{ thaiDateNotime(item.created_date) }}
                         </td>
-                        <td style="text-align: center;">
-                            <td>
-                                <VBtn size="small" color="primary" @click="detail = true; billDetail = item.detail " block class="mt-1">
-                                    รายการ
-                                </VBtn>
+                        <!-- <td style="text-align: center;">
+                            <tr>
+                                <th style="text-align: center;">
+                                    
+                                </th>
+                                <th style="text-align: center;">
+                                   
+                                </th>
+                                <th style="text-align: center;">
+                                   
+                                </th>
+                                <th style="text-align: center;">
+                                    
+                                </th>
+                               
                                 <VBtn :disabled="item.percen == 100 ? true : false" size="small" :color="Number(item.percen) < 30 ? 'error' : 'success'" @click="updatePercen(30 , item.id)" block class="mt-1">
                                     สำเร็จ 30%
                                 </VBtn>
-                                <VBtn :disabled="item.percen == 100 ? true : false" size="small" :color="Number(item.percen) < 100 ? 'error' : 'success'" @click="updatePercen(100 , item.id)" block class="mt-1">
-                                    สำเร็จ 100%
-                                </VBtn>
-                                <VBtn target="_blank" :href="`/bill?bill_id=${item.id}`" size="small" color="success" block class="mt-1">
-                                    บิล
-                                </VBtn>
-                                <VBtn v-if="user_rile_id == 1" @click="deleteItem(item)" size="small" color="error" block class="mt-1">
-                                    ลบรายการ 
-                                </VBtn>
-                            </td>
+                               
+                                
+                               
+                            </tr>
+                        </td> -->
+                        <td style="text-align: center;">
+                            <VBtn :disabled="item.percen == 100 ? true : false" size="small" :color="Number(item.percen) < 100 ? 'error' : 'success'" @click="updatePercen(100 , item.id)" block class="mt-1">
+                                สำเร็จ 100%
+                            </VBtn>
+                        </td>
+                        <td style="text-align: center;">
+                            <VBtn target="_blank" :href="`/bill?bill_id=${item.id}`" size="small" color="primary" block class="mt-1">
+                                บิล
+                            </VBtn>
+                        </td>
+                        <td style="text-align: center;">
+                            <VBtn v-if="user_rile_id == 1" @click="deleteItem(item)" size="small" color="error" block class="mt-1">
+                                ลบรายการ 
+                            </VBtn>
                         </td>
                     </tr>
                 </tbody>

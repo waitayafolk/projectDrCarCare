@@ -367,6 +367,7 @@ function handleEvent(event) {
 }
 
 async function handleText(message, replyToken,userId) {
+ 
   if(message.text == 'ล้างเลย'){
     let customer = (await conpool.query(`SELECT * FROM customer WHERE line_id = $1 AND status = 'use' `, [userId])).rows[0]
     if(customer == undefined){
@@ -404,10 +405,10 @@ async function handleText(message, replyToken,userId) {
                   LEFT JOIN customer on bill.customer_id = customer.id
                   LEFT JOIN admin on bill.admin_id = admin.id
                   LEFT JOIN service_group on bill.service_group_id = service_group.id
-                  WHERE bill.status != 'delete' AND customer_id = $1 AND DATE(bill.created_date) = $2
+                  WHERE bill.status != 'delete' AND customer_id = $1 
                   Order by bill.id DESC 
-      `, [customer.id , date_now])).rows[0]
-
+      `, [customer.id ])).rows[0]
+      
       if(bill == undefined){
         const message = {
           "type": "flex",
@@ -485,22 +486,26 @@ async function handleText(message, replyToken,userId) {
           LEFT JOIN customer on bill.customer_id = customer.id
           LEFT JOIN admin on bill.admin_id = admin.id
           LEFT JOIN service_group on bill.service_group_id = service_group.id
-          WHERE bill.status != 'delete' AND customer_id = $1 AND DATE(bill.created_date) = $2
+          WHERE bill.status != 'delete' AND customer_id = $1 
           Order by bill.id DESC 
-        `, [customer.id , date_now])).rows[0]
+        `, [customer.id ])).rows[0]
+
+        // console.log(check)
+        // return
+        // console.log(date_now)
         // console.log(check)
         // return
         let years = new Date(check.created_date).getFullYear()
         let month = String(new Date(check.created_date).getMonth()+1).padStart(2, '0') 
         let day = String(new Date(check.created_date).getDate()).padStart(2, '0') 
-        let hours = String(new Date(check.created_date).getHours()+1).padStart(2, '0') 
+        let hours = String(new Date(check.created_date).getHours()).padStart(2, '0') 
         let minute = String(new Date(check.created_date).getMinutes()).padStart(2, '0') 
         let finitdate = `${years}-${month}-${day} ${hours}:${minute}`
         let image = null 
         if(check.percen == 30 ){
-          image = 'https://043a-2403-6200-8822-2da5-935-568-8658-b2b0.ngrok-free.app/upload/image/image2.png'
+          image = 'https://03a1-2403-6200-8822-2da5-70bf-2247-7096-b7ce.ngrok-free.app/upload/image/image2.png'
         }else if(check.percen == 100 ){
-          image = 'https://043a-2403-6200-8822-2da5-935-568-8658-b2b0.ngrok-free.app/upload/image/image1.png'
+          image = 'https://03a1-2403-6200-8822-2da5-70bf-2247-7096-b7ce.ngrok-free.app/upload/image/image1.png'
         }else if(check.percen == 0 ){
           image = 'https://example.com/flex/images/image.jpg'
         }
@@ -540,9 +545,9 @@ async function handleText(message, replyToken,userId) {
                   "weight": "bold",
                   "size": "xl"
                 },
-              {
+                {
                   "type": "text",
-                  "text": check.licen ,
+                  "text": check?.licen == undefined ?  "" : check?.licen,
                   "weight": "bold",
                   "size": "xl"
                 },
@@ -678,16 +683,16 @@ async function handleText(message, replyToken,userId) {
               "type": "box",
               "layout": "vertical",
               "contents": [
-                  {
-                    "type": "button",
-                    "style": "primary",
-                    "color": "#E040FB",
-                    "action": {
-                      "type": "message",
-                      "label": "Qrcode",
-                      "text": "Qrcode"
-                    }
-                  }
+                  // {
+                  //   "type": "button",
+                  //   "style": "primary",
+                  //   "color": "#E040FB",
+                  //   "action": {
+                  //     "type": "message",
+                  //     "label": "Qrcode",
+                  //     "text": "Qrcode"
+                  //   }
+                  // }
               ]
             }
           }
@@ -770,12 +775,12 @@ async function handleText(message, replyToken,userId) {
       }
       return replyTemplate(replyToken, message);
     }else if (message.text == 'Qrcode'){
-      const message = {
-        "type": "image",
-        "originalContentUrl": "https://043a-2403-6200-8822-2da5-935-568-8658-b2b0.ngrok-free.app/upload/image/qrcode.jpeg",
-        "previewImageUrl": "https://043a-2403-6200-8822-2da5-935-568-8658-b2b0.ngrok-free.app/upload/image/qrcode.jpeg"
-      }
-      return replyTemplate(replyToken, message);
+      // const message = {
+      //   "type": "image",
+      //   "originalContentUrl": "https://03a1-2403-6200-8822-2da5-70bf-2247-7096-b7ce.ngrok-free.app/upload/image/qrcode.jpeg",
+      //   "previewImageUrl": "https://03a1-2403-6200-8822-2da5-70bf-2247-7096-b7ce.ngrok-free.app/upload/image/qrcode.jpeg"
+      // }
+      // return replyTemplate(replyToken, message);
     }
 //   if(message.text == 'สมัครสมาชิก'){
 //     let customer = (await conpool.query(`SELECT * FROM customer WHERE line_id = $1 AND status = true `, [userId])).rows[0]

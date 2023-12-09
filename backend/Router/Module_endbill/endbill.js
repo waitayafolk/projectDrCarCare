@@ -218,16 +218,16 @@ exports.endbill = async (req, res) => {
                                 }
                             ]
                         },
-                        {
-                            "type": "button",
-                            "action": {
-                            "type": "uri",
-                            "label": "บิลค่าบริการ",
-                            "uri": url
-                            },
-                            "style": "primary",
-                            "color": "#E040FB"
-                        },
+                        // {
+                        //     "type": "button",
+                        //     "action": {
+                        //     "type": "uri",
+                        //     "label": "บิลค่าบริการ",
+                        //     "uri": url
+                        //     },
+                        //     "style": "primary",
+                        //     "color": "#E040FB"
+                        // },
                     ]
                     },
                     "footer": {
@@ -235,17 +235,33 @@ exports.endbill = async (req, res) => {
                         "layout": "vertical",
                         "contents": [
                             {
-                              "type": "button",
-                              "style": "primary",
-                              "color": "#E040FB",
-                              "action": {
-                                "type": "message",
-                                "label": "Qrcode",
-                                "text": "Qrcode"
-                              }
+                                "type": "button",
+                                "action": {
+                                    "type": "uri",
+                                    "label": "บิลค่าบริการ",
+                                    "uri": url
+                                },
+                                "style": "primary",
+                                "color": "#E040FB"
                             }
                         ]
                     }
+                    // "footer": {
+                    //     "type": "box",
+                    //     "layout": "vertical",
+                    //     "contents": [
+                    //         {
+                    //           "type": "button",
+                    //           "style": "primary",
+                    //           "color": "#E040FB",
+                    //           "action": {
+                    //             "type": "message",
+                    //             "label": "Qrcode",
+                    //             "text": "Qrcode"
+                    //           }
+                    //         }
+                    //     ]
+                    // }
                     
                 }
                 }
@@ -254,7 +270,7 @@ exports.endbill = async (req, res) => {
                     status: "success",
                     message : 'เพิ่มข้อมูลสำเร็จ'
                 });
-                // return replyTemplate(check.line_id, message);
+                return replyTemplate(check.line_id, message);
             }
         });
     }catch(err){
@@ -309,200 +325,200 @@ exports.endbillPacket = async (req, res) => {
                     return  res.status(200).json({ status: "success", message : 'เพิ่มข้อมูลสำเร็จ'  });
                 }
 
-                res.status(200).json({
-                    status: "success",
-                    message : 'เพิ่มข้อมูลสำเร็จ'
-                });
-
-                return
-
-                // let years = new Date(check.created_date).getFullYear()
-                // let month = String(new Date(check.created_date).getMonth()+1).padStart(2, '0') 
-                // let day = String(new Date(check.created_date).getDate()).padStart(2, '0') 
-                // let hours = String(new Date(check.created_date).getHours()+1).padStart(2, '0') 
-                // let minute = String(new Date(check.created_date).getMinutes()).padStart(2, '0') 
-                // let finitdate = `${years}-${month}-${day} ${hours}:${minute}`
-                // let image = null 
-                // if(check.percen == 30 ){
-                //     image = 'https://1482-223-205-227-4.ngrok-free.app/upload/image/image2.png'
-                // }else if(check.percen == 100 ){
-                //     image = 'https://1482-223-205-227-4.ngrok-free.app/upload/image/image1.png'
-                // }else if(check.percen == 0 ){
-                //     image = 'https://example.com/flex/images/image.jpg'
-                // }
-                // let url = `http://188.166.221.231:3388/bill?bill_id=${bill_id}`
-                // const message = {
-                // "type": "flex",
-                // "altText": "Dr.Carcare",
-                // "contents": {
-                //     "type": "bubble",
-                //     "hero": {
-                //         "type": "image",
-                //         "url": `${image}`,
-                //         // "https://images.unsplash.com/photo-1575936123452-b67c3203c357?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D&w=1000&q=80",
-                //         "size": "full",
-                //         "aspectRatio": "1:1",
-                //         "aspectMode": "cover"
-                //     },
-                //     "body": {
-                //     "type": "box",
-                //     "layout": "vertical",
-                //     "contents": [
-                //         {
-                //         "type": "text",
-                //         "text": "Dr.Carcare",
-                //         "weight": "bold",
-                //         "size": "xl"
-                //         },
-                //         {
-                //         "type": "text",
-                //         "text": "ล้างรถ",
-                //         "weight": "bold",
-                //         "size": "xl"
-                //         },
-                //         {
-                //         "type": "box",
-                //         "layout": "baseline",
-                //         "margin": "md",
-                //         "contents": [
-                //             {
-                //             "type": "text",
-                //             "text": "เวลาประมาณล้างเสร็จ",
-                //             "size": "sm"
-                //             },
-                //             {
-                //             "type": "text",
-                //             "text": `${thaiDateNotime(finitdate)}`,
-                //             "margin": "sm",
-                //             "size": "sm",
-                //             }
-                //         ]
-                //         },
-                //         {
-                //         "type": "box",
-                //         "layout": "baseline",
-                //         "margin": "md",
-                //         "contents": [
-                //             {
-                //             "type": "text",
-                //             "text": "เปอร์เซ็นที่ล้างเสร็จ",
-                //             "size": "sm"
-                //             },
-                //             {
-                //             "type": "text",
-                //             "text": `${check.percen}%`,
-                //             "margin": "sm",
-                //             "size": "sm",
-                //             }
-                //         ]
-                //         },
-                //         {
-                //         "type": "box",
-                //         "layout": "baseline",
-                //         "margin": "md",
-                //         "contents": [
-                //             {
-                //             "type": "text",
-                //             "text": "ราคา",
-                //             "size": "sm"
-                //             },
-                //             {
-                //             "type": "text",
-                //             "text": `${check.price.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} บาท`,
-                //             "margin": "sm",
-                //             "size": "sm",
-                //             }
-                //         ]
-                //         },
-                //         {
-                //         "type": "box",
-                //         "layout": "baseline",
-                //         "margin": "md",
-                //         "contents": [
-                //             {
-                //             "type": "text",
-                //             "text": "ส่วนลด",
-                //             "size": "sm"
-                //             },
-                //             {
-                //             "type": "text",
-                //             "text": `${check.discount.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} บาท`,
-                //             "margin": "sm",
-                //             "size": "sm",
-                //             }
-                //         ]
-                //         },
-                //         {
-                //         "type": "box",
-                //         "layout": "baseline",
-                //         "margin": "md",
-                //         "contents": [
-                //             {
-                //             "type": "text",
-                //             "text": "ยอดรวม",
-                //             "size": "sm"
-                //             },
-                //             {
-                //             "type": "text",
-                //             "text": `${check.total.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} บาท`,
-                //             "margin": "sm",
-                //             "size": "sm",
-                //             }
-                //         ]
-                //         },
-                //         {
-                //             "type": "separator",
-                //             "color": "#000000"
-                //         },
-                //         {
-                //             "type": "separator",
-                //             "color": "#000000"
-                //         },
-                //         {
-                //             "type": "box",
-                //             "layout": "baseline",
-                //             "margin": "md",
-                //             "contents": [
-                //                 {
-                //                 "type": "text",
-                //                 "text": "การชำระ",
-                //                 "size": "sm"
-                //                 },
-                //                 {
-                //                 "type": "text",
-                //                 "text": `ยังไม่ชำระ`,
-                //                 "margin": "sm",
-                //                 "size": "sm",
-                //                 }
-                //             ]
-                //         },
-                //     ]
-                //     },
-                //     "footer": {
-                //         "type": "box",
-                //         "layout": "vertical",
-                //         "contents": [
-                //             {
-                //                 "type": "button",
-                //                 "action": {
-                //                     "type": "uri",
-                //                     "label": "บิลค่าบริการ",
-                //                     "uri": url
-                //                 },
-                //                 "style": "primary",
-                //                 "color": "#E040FB"
-                //             }
-                //         ]
-                //     }
-                    
-                // }
-                // }
-                
                 // res.status(200).json({
                 //     status: "success",
                 //     message : 'เพิ่มข้อมูลสำเร็จ'
                 // });
-                // return replyTemplate(check.line_id, message);
+
+                // return
+
+                let years = new Date(check.created_date).getFullYear()
+                let month = String(new Date(check.created_date).getMonth()+1).padStart(2, '0') 
+                let day = String(new Date(check.created_date).getDate()).padStart(2, '0') 
+                let hours = String(new Date(check.created_date).getHours()+1).padStart(2, '0') 
+                let minute = String(new Date(check.created_date).getMinutes()).padStart(2, '0') 
+                let finitdate = `${years}-${month}-${day} ${hours}:${minute}`
+                let image = null 
+                if(check.percen == 30 ){
+                    image = 'https://1482-223-205-227-4.ngrok-free.app/upload/image/image2.png'
+                }else if(check.percen == 100 ){
+                    image = 'https://1482-223-205-227-4.ngrok-free.app/upload/image/image1.png'
+                }else if(check.percen == 0 ){
+                    image = 'https://example.com/flex/images/image.jpg'
+                }
+                let url = `http://188.166.221.231:3388/bill?bill_id=${bill_id}`
+                const message = {
+                "type": "flex",
+                "altText": "Dr.Carcare",
+                "contents": {
+                    "type": "bubble",
+                    "hero": {
+                        "type": "image",
+                        "url": `${image}`,
+                        // "https://images.unsplash.com/photo-1575936123452-b67c3203c357?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D&w=1000&q=80",
+                        "size": "full",
+                        "aspectRatio": "1:1",
+                        "aspectMode": "cover"
+                    },
+                    "body": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "contents": [
+                        {
+                        "type": "text",
+                        "text": "Dr.Carcare",
+                        "weight": "bold",
+                        "size": "xl"
+                        },
+                        {
+                        "type": "text",
+                        "text": "ล้างรถ",
+                        "weight": "bold",
+                        "size": "xl"
+                        },
+                        {
+                        "type": "box",
+                        "layout": "baseline",
+                        "margin": "md",
+                        "contents": [
+                            {
+                            "type": "text",
+                            "text": "เวลาประมาณล้างเสร็จ",
+                            "size": "sm"
+                            },
+                            {
+                            "type": "text",
+                            "text": `${thaiDateNotime(finitdate)}`,
+                            "margin": "sm",
+                            "size": "sm",
+                            }
+                        ]
+                        },
+                        {
+                        "type": "box",
+                        "layout": "baseline",
+                        "margin": "md",
+                        "contents": [
+                            {
+                            "type": "text",
+                            "text": "เปอร์เซ็นที่ล้างเสร็จ",
+                            "size": "sm"
+                            },
+                            {
+                            "type": "text",
+                            "text": `${check.percen}%`,
+                            "margin": "sm",
+                            "size": "sm",
+                            }
+                        ]
+                        },
+                        {
+                        "type": "box",
+                        "layout": "baseline",
+                        "margin": "md",
+                        "contents": [
+                            {
+                            "type": "text",
+                            "text": "ราคา",
+                            "size": "sm"
+                            },
+                            {
+                            "type": "text",
+                            "text": `${check.price.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} บาท`,
+                            "margin": "sm",
+                            "size": "sm",
+                            }
+                        ]
+                        },
+                        {
+                        "type": "box",
+                        "layout": "baseline",
+                        "margin": "md",
+                        "contents": [
+                            {
+                            "type": "text",
+                            "text": "ส่วนลด",
+                            "size": "sm"
+                            },
+                            {
+                            "type": "text",
+                            "text": `${check.discount.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} บาท`,
+                            "margin": "sm",
+                            "size": "sm",
+                            }
+                        ]
+                        },
+                        {
+                        "type": "box",
+                        "layout": "baseline",
+                        "margin": "md",
+                        "contents": [
+                            {
+                            "type": "text",
+                            "text": "ยอดรวม",
+                            "size": "sm"
+                            },
+                            {
+                            "type": "text",
+                            "text": `${check.total.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')} บาท`,
+                            "margin": "sm",
+                            "size": "sm",
+                            }
+                        ]
+                        },
+                        {
+                            "type": "separator",
+                            "color": "#000000"
+                        },
+                        {
+                            "type": "separator",
+                            "color": "#000000"
+                        },
+                        {
+                            "type": "box",
+                            "layout": "baseline",
+                            "margin": "md",
+                            "contents": [
+                                {
+                                "type": "text",
+                                "text": "การชำระ",
+                                "size": "sm"
+                                },
+                                {
+                                "type": "text",
+                                "text": `ยังไม่ชำระ`,
+                                "margin": "sm",
+                                "size": "sm",
+                                }
+                            ]
+                        },
+                    ]
+                    },
+                    "footer": {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                            {
+                                "type": "button",
+                                "action": {
+                                    "type": "uri",
+                                    "label": "บิลค่าบริการ",
+                                    "uri": url
+                                },
+                                "style": "primary",
+                                "color": "#E040FB"
+                            }
+                        ]
+                    }
+                    
+                }
+                }
+                
+                res.status(200).json({
+                    status: "success",
+                    message : 'เพิ่มข้อมูลสำเร็จ'
+                });
+                return replyTemplate(check.line_id, message);
             }
         });
     }catch(err){
@@ -727,16 +743,16 @@ exports.update = async (req, res) => {
                                 }
                             ]
                         },
-                        {
-                            "type": "button",
-                            "action": {
-                            "type": "uri",
-                            "label": "บิลค่าบริการ",
-                            "uri": url
-                            },
-                            "style": "primary",
-                            "color": "#E040FB"
-                        },
+                        // {
+                        //     "type": "button",
+                        //     "action": {
+                        //     "type": "uri",
+                        //     "label": "บิลค่าบริการ",
+                        //     "uri": url
+                        //     },
+                        //     "style": "primary",
+                        //     "color": "#E040FB"
+                        // },
                     ]
                     },
                     "footer": {
@@ -744,24 +760,40 @@ exports.update = async (req, res) => {
                         "layout": "vertical",
                         "contents": [
                             {
-                              "type": "button",
-                              "style": "primary",
-                              "color": "#E040FB",
-                              "action": {
-                                "type": "message",
-                                "label": "Qrcode",
-                                "text": "Qrcode"
-                              }
+                                "type": "button",
+                                "action": {
+                                    "type": "uri",
+                                    "label": "บิลค่าบริการ",
+                                    "uri": url
+                                },
+                                "style": "primary",
+                                "color": "#E040FB"
                             }
                         ]
                     }
+                    // "footer": {
+                    //     "type": "box",
+                    //     "layout": "vertical",
+                    //     "contents": [
+                    //         {
+                    //           "type": "button",
+                    //           "style": "primary",
+                    //           "color": "#E040FB",
+                    //           "action": {
+                    //             "type": "message",
+                    //             "label": "Qrcode",
+                    //             "text": "Qrcode"
+                    //           }
+                    //         }
+                    //     ]
+                    // }
                 }
                 }
                 res.status(200).json({
                     status: "success",
                     message : 'แก้ไขข้อมูลสำเร็จ'
                 });
-                // return replyTemplate(check.line_id, message);
+                return replyTemplate(check.line_id, message);
             }
         });
     }catch(err){

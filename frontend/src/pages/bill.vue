@@ -25,6 +25,7 @@
             service_group_id : 0 ,
             status : '' ,
             total : 0 ,
+            licen : '' , 
         },
         company : {
             company_name : '' ,
@@ -117,6 +118,12 @@
                 เบอร์โทรลูกค้า : {{ bills.mobile }}
               </td>
             </tr>
+            <tr>
+              <td style="font-size: 16px; text-align: left;">
+                ทะเบียน : {{ bills.licen }}
+              </td>
+            </tr>
+            
         </table>
         <hr>
         <hr>
