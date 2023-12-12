@@ -702,26 +702,58 @@ async function handleText(message, replyToken,userId) {
       // console.log(bill)
     }
     }else if (message.text == 'Promotion'){
+      let image = 'https://03a1-2403-6200-8822-2da5-70bf-2247-7096-b7ce.ngrok-free.app/upload/image/promotion.jpeg'
       const message = {
         "type": "flex",
         "altText": "Dr.Carcare",
         "contents": {
           "type": "bubble",
+          "hero": {
+            "type": "image",
+            "url": `${image}`,
+            "size": "full",
+            "aspectRatio": "2:1",
+            "aspectMode": "cover"
+          },
           "body": {
             "type": "box",
             "layout": "vertical",
             "contents": [
               {
-                "type": "text",
-                "text": "Promotion",
-                "weight": "bold",
-                "size": "xl"
+                "type": "box",
+                "layout": "vertical",
+                "contents": [
+                    {
+                      "type": "button",
+                      "style": "primary",
+                      "color": "#E040FB",
+                      "action": {
+                        "type": "message",
+                        "label": "สนใจโปรโมชั่น",
+                        "text": "สนใจโปรโมชั่น"
+                      }
+                    }
+                ]
               },
               {
-                "type": "text",
-                "text": "ยังไม่มีโปรโมชั่น",
-                "weight": "bold",
-                "size": "xl"
+                "type": "separator",
+                "color": "#000000"
+              },
+              {
+                "type": "box",
+                "layout": "vertical",
+                "contents": [
+                    {
+                      "type": "button",
+                      "style": "primary",
+                      "color": "#E040FB",
+                      "action": {
+                        "type": "message",
+                        "label": "สอบถามรายละเอียดเพิ่มเติม",
+                        "text": "สอบถามรายละเอียดเพิ่มเติม"
+                      }
+                    }
+                ]
               },
             ]
           },
@@ -729,6 +761,16 @@ async function handleText(message, replyToken,userId) {
             "type": "box",
             "layout": "vertical",
             "contents": [
+                // {
+                //   "type": "button",
+                //   "style": "primary",
+                //   "color": "#E040FB",
+                //   "action": {
+                //     "type": "message",
+                //     "label": "Qrcode",
+                //     "text": "Qrcode"
+                //   }
+                // }
             ]
           }
         }
@@ -774,13 +816,20 @@ async function handleText(message, replyToken,userId) {
         }
       }
       return replyTemplate(replyToken, message);
-    }else if (message.text == 'Qrcode'){
+    }else if (message.text == 'Qrcode' || message.text == 'แสกนจ่าย'){
       // const message = {
       //   "type": "image",
       //   "originalContentUrl": "https://03a1-2403-6200-8822-2da5-70bf-2247-7096-b7ce.ngrok-free.app/upload/image/qrcode.jpeg",
       //   "previewImageUrl": "https://03a1-2403-6200-8822-2da5-70bf-2247-7096-b7ce.ngrok-free.app/upload/image/qrcode.jpeg"
       // }
       // return replyTemplate(replyToken, message);
+    }
+    else if (message.text == 'สอบถามรายละเอียดเพิ่มเติม'){
+      let message = {
+        "type": "text",
+        "text": "ติดต่อสอบถามโทร 0652544666"
+      }
+      return replyTemplate(replyToken, message);
     }
 //   if(message.text == 'สมัครสมาชิก'){
 //     let customer = (await conpool.query(`SELECT * FROM customer WHERE line_id = $1 AND status = true `, [userId])).rows[0]
