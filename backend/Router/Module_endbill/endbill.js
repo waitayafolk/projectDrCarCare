@@ -30,6 +30,10 @@ exports.endbill = async (req, res) => {
             discount += item.discount
             price += item.price
         }
+        if(req.body.licen == null || req.body.licen == undefined){
+            req.body.licen = ' '
+        }
+
         db.query(`INSERT INTO bill ( price, discount , total  , service_group_id , admin_id , customer_id , percen ,status , created_date , pay , licen ) 
         VALUES ($1 , $2 , $3  , $4 ,$5 ,$6 ,$7 , 'wait' , $8 , 'no' , $9 ) returning id ` , 
         [price , discount ,  total ,  req.body.service_group_id ,  req.body.admin_id ,  req.body.customer_id , 0 , new Date() , req.body.licen ], async(err, result) => {
@@ -296,6 +300,10 @@ exports.endbillPacket = async (req, res) => {
                                     WHERE packet_buy.id = $1 `, [req.body.packet_id])).rows[0]
 
         await db.query(`UPDATE packet_buy SET count = $1 WHERE id = $2 `, [packet.count -1 , packet.id ])
+
+        if(packet.licen == null || packet.licen == undefined){
+            packet.licen = ' '
+        }
                                     
         db.query(`INSERT INTO bill ( price, discount , total  , service_group_id , admin_id , customer_id , percen ,status , created_date , pay , licen ) 
         VALUES ($1 , $2 , $3  , $4 ,$5 ,$6 ,$7 , 'wait' , $8 , 'no' , $9 ) returning id ` , 
