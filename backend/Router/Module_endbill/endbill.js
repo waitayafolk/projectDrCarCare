@@ -222,50 +222,50 @@ exports.endbill = async (req, res) => {
                                 }
                             ]
                         },
-                        // {
-                        //     "type": "button",
-                        //     "action": {
-                        //     "type": "uri",
-                        //     "label": "บิลค่าบริการ",
-                        //     "uri": url
-                        //     },
-                        //     "style": "primary",
-                        //     "color": "#E040FB"
-                        // },
+                        {
+                            "type": "button",
+                            "action": {
+                            "type": "uri",
+                            "label": "บิลค่าบริการ",
+                            "uri": url
+                            },
+                            "style": "primary",
+                            "color": "#E040FB"
+                        },
                     ]
                     },
-                    "footer": {
-                        "type": "box",
-                        "layout": "vertical",
-                        "contents": [
-                            {
-                                "type": "button",
-                                "action": {
-                                    "type": "uri",
-                                    "label": "บิลค่าบริการ",
-                                    "uri": url
-                                },
-                                "style": "primary",
-                                "color": "#E040FB"
-                            }
-                        ]
-                    }
                     // "footer": {
                     //     "type": "box",
                     //     "layout": "vertical",
                     //     "contents": [
                     //         {
-                    //           "type": "button",
-                    //           "style": "primary",
-                    //           "color": "#E040FB",
-                    //           "action": {
-                    //             "type": "message",
-                    //             "label": "Qrcode",
-                    //             "text": "แสกนจ่าย"
-                    //           }
+                    //             "type": "button",
+                    //             "action": {
+                    //                 "type": "uri",
+                    //                 "label": "บิลค่าบริการ",
+                    //                 "uri": url
+                    //             },
+                    //             "style": "primary",
+                    //             "color": "#E040FB"
                     //         }
                     //     ]
                     // }
+                    "footer": {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                            {
+                              "type": "button",
+                              "style": "primary",
+                              "color": "#E040FB",
+                              "action": {
+                                "type": "message",
+                                "label": "Qrcode",
+                                "text": "แสกนจ่าย"
+                              }
+                            }
+                        ]
+                    }
                     
                 }
                 }
@@ -500,50 +500,50 @@ exports.endbillPacket = async (req, res) => {
                                     }
                                 ]
                             },
-                            // {
-                            //     "type": "button",
-                            //     "action": {
-                            //     "type": "uri",
-                            //     "label": "บิลค่าบริการ",
-                            //     "uri": url
-                            //     },
-                            //     "style": "primary",
-                            //     "color": "#E040FB"
-                            // },
+                            {
+                                "type": "button",
+                                "action": {
+                                "type": "uri",
+                                "label": "บิลค่าบริการ",
+                                "uri": url
+                                },
+                                "style": "primary",
+                                "color": "#E040FB"
+                            },
                         ]
                         },
-                        "footer": {
-                            "type": "box",
-                            "layout": "vertical",
-                            "contents": [
-                                {
-                                    "type": "button",
-                                    "action": {
-                                        "type": "uri",
-                                        "label": "บิลค่าบริการ",
-                                        "uri": url
-                                    },
-                                    "style": "primary",
-                                    "color": "#E040FB"
-                                }
-                            ]
-                        }
                         // "footer": {
                         //     "type": "box",
                         //     "layout": "vertical",
                         //     "contents": [
                         //         {
-                        //           "type": "button",
-                        //           "style": "primary",
-                        //           "color": "#E040FB",
-                        //           "action": {
-                        //             "type": "message",
-                        //             "label": "Qrcode",
-                        //             "text": "แสกนจ่าย"
-                        //           }
+                        //             "type": "button",
+                        //             "action": {
+                        //                 "type": "uri",
+                        //                 "label": "บิลค่าบริการ",
+                        //                 "uri": url
+                        //             },
+                        //             "style": "primary",
+                        //             "color": "#E040FB"
                         //         }
                         //     ]
                         // }
+                        "footer": {
+                            "type": "box",
+                            "layout": "vertical",
+                            "contents": [
+                                {
+                                  "type": "button",
+                                  "style": "primary",
+                                  "color": "#E040FB",
+                                  "action": {
+                                    "type": "message",
+                                    "label": "Qrcode",
+                                    "text": "แสกนจ่าย"
+                                  }
+                                }
+                            ]
+                        }
                         
                     }
                     }
@@ -789,38 +789,38 @@ exports.update = async (req, res) => {
                         // },
                     ]
                     },
-                    "footer": {
-                        "type": "box",
-                        "layout": "vertical",
-                        "contents": [
-                            {
-                                "type": "button",
-                                "action": {
-                                    "type": "uri",
-                                    "label": "บิลค่าบริการ",
-                                    "uri": url
-                                },
-                                "style": "primary",
-                                "color": "#E040FB"
-                            }
-                        ]
-                    }
                     // "footer": {
                     //     "type": "box",
                     //     "layout": "vertical",
                     //     "contents": [
                     //         {
-                    //           "type": "button",
-                    //           "style": "primary",
-                    //           "color": "#E040FB",
-                    //           "action": {
-                    //             "type": "message",
-                    //             "label": "Qrcode",
-                    //             "text": "แสกนจ่าย"
-                    //           }
+                    //             "type": "button",
+                    //             "action": {
+                    //                 "type": "uri",
+                    //                 "label": "บิลค่าบริการ",
+                    //                 "uri": url
+                    //             },
+                    //             "style": "primary",
+                    //             "color": "#E040FB"
                     //         }
                     //     ]
                     // }
+                    "footer": {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                            {
+                              "type": "button",
+                              "style": "primary",
+                              "color": "#E040FB",
+                              "action": {
+                                "type": "message",
+                                "label": "Qrcode",
+                                "text": "แสกนจ่าย"
+                              }
+                            }
+                        ]
+                    }
                 }
                 }
                 res.status(200).json({
