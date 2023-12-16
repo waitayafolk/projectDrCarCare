@@ -817,12 +817,12 @@ async function handleText(message, replyToken,userId) {
       }
       return replyTemplate(replyToken, message);
     }else if (message.text == 'Qrcode' || message.text == 'แสกนจ่าย'){
-      // const message = {
-      //   "type": "image",
-      //   "originalContentUrl": "https://03a1-2403-6200-8822-2da5-70bf-2247-7096-b7ce.ngrok-free.app/upload/image/qrcode.jpeg",
-      //   "previewImageUrl": "https://03a1-2403-6200-8822-2da5-70bf-2247-7096-b7ce.ngrok-free.app/upload/image/qrcode.jpeg"
-      // }
-      // return replyTemplate(replyToken, message);
+      const message = {
+        "type": "image",
+        "originalContentUrl": "https://03a1-2403-6200-8822-2da5-70bf-2247-7096-b7ce.ngrok-free.app/upload/image/qrcode.jpeg",
+        "previewImageUrl": "https://03a1-2403-6200-8822-2da5-70bf-2247-7096-b7ce.ngrok-free.app/upload/image/qrcode.jpeg"
+      }
+      return replyTemplate(replyToken, message);
     }
     else if (message.text == 'สอบถามรายละเอียดเพิ่มเติม'){
       let message = {
