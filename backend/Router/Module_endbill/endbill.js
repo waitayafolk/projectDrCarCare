@@ -274,7 +274,7 @@ exports.endbill = async (req, res) => {
                     status: "success",
                     message : 'เพิ่มข้อมูลสำเร็จ'
                 });
-                return replyTemplate(check.line_id, message);
+                // return replyTemplate(check.line_id, message);
             }
         });
     }catch(err){
@@ -552,7 +552,7 @@ exports.endbillPacket = async (req, res) => {
                     status: "success",
                     message : 'เพิ่มข้อมูลสำเร็จ'
                 });
-                return replyTemplate(check.line_id, message);
+                // return replyTemplate(check.line_id, message);
             }
         });
     }catch(err){
@@ -811,7 +811,7 @@ exports.update = async (req, res) => {
                     status: "success",
                     message : 'แก้ไขข้อมูลสำเร็จ'
                 });
-                return replyTemplate(check.line_id, message);
+                // return replyTemplate(check.line_id, message);
             }
         });
     }catch(err){
