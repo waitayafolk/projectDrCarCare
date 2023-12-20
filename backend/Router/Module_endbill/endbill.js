@@ -31,7 +31,7 @@ exports.endbill = async (req, res) => {
             price += item.price
         }
         if(req.body.licen == null || req.body.licen == undefined){
-            req.body.licen = ' '
+            req.body.licen = '9999'
         }
 
         db.query(`INSERT INTO bill ( price, discount , total  , service_group_id , admin_id , customer_id , percen ,status , created_date , pay , licen ) 
@@ -300,11 +300,11 @@ exports.endbillPacket = async (req, res) => {
                                     WHERE packet_buy.id = $1 `, [req.body.packet_id])).rows[0]
 
         await db.query(`UPDATE packet_buy SET count = $1 WHERE id = $2 `, [packet.count -1 , packet.id ])
-
+    
         if(packet.licen == null || packet.licen == undefined){
-            packet.licen = ' '
+            packet.licen = '9999'
         }
-                                    
+
         db.query(`INSERT INTO bill ( price, discount , total  , service_group_id , admin_id , customer_id , percen ,status , created_date , pay , licen ) 
         VALUES ($1 , $2 , $3  , $4 ,$5 ,$6 ,$7 , 'wait' , $8 , 'no' , $9 ) returning id ` , 
         [price , price ,  0 ,  0 ,  req.body.admin_id ,  packet.customer_id , 0 , new Date() , packet.licen ], async(err, result) => {
@@ -777,34 +777,18 @@ exports.update = async (req, res) => {
                                 }
                             ]
                         },
-                        // {
-                        //     "type": "button",
-                        //     "action": {
-                        //     "type": "uri",
-                        //     "label": "บิลค่าบริการ",
-                        //     "uri": url
-                        //     },
-                        //     "style": "primary",
-                        //     "color": "#E040FB"
-                        // },
+                        {
+                            "type": "button",
+                            "action": {
+                            "type": "uri",
+                            "label": "บิลค่าบริการ",
+                            "uri": url
+                            },
+                            "style": "primary",
+                            "color": "#E040FB"
+                        },
                     ]
                     },
-                    // "footer": {
-                    //     "type": "box",
-                    //     "layout": "vertical",
-                    //     "contents": [
-                    //         {
-                    //             "type": "button",
-                    //             "action": {
-                    //                 "type": "uri",
-                    //                 "label": "บิลค่าบริการ",
-                    //                 "uri": url
-                    //             },
-                    //             "style": "primary",
-                    //             "color": "#E040FB"
-                    //         }
-                    //     ]
-                    // }
                     "footer": {
                         "type": "box",
                         "layout": "vertical",

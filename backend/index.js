@@ -683,16 +683,16 @@ async function handleText(message, replyToken,userId) {
               "type": "box",
               "layout": "vertical",
               "contents": [
-                  // {
-                  //   "type": "button",
-                  //   "style": "primary",
-                  //   "color": "#E040FB",
-                  //   "action": {
-                  //     "type": "message",
-                  //     "label": "Qrcode",
-                  //     "text": "Qrcode"
-                  //   }
-                  // }
+                  {
+                    "type": "button",
+                    "style": "primary",
+                    "color": "#E040FB",
+                    "action": {
+                      "type": "message",
+                      "label": "Qrcode",
+                      "text": "Qrcode"
+                    }
+                  }
               ]
             }
           }
