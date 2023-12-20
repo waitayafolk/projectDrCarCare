@@ -348,6 +348,7 @@
                         <!-- <th style="text-align: start;">id</th> -->
                         <th style="text-align: start;">สำเร็จ</th>
                         <th style="text-align: start;">ประเภท</th>
+                        <th style="text-align: start;">ทะเบียนรถ</th>
                         <th style="text-align: start;">ลูกค้า</th>
                         <th style="text-align: start;">เบอร์โทรลูกค้า</th>
                         <th style="text-align: start;">แอดมินผู้รับผิดชอบ</th>
@@ -369,6 +370,7 @@
                         <!-- <td style="text-align: start;">{{ item.id }}</td> -->
                         <td style="text-align: start;">{{ item.percen }} %</td>
                         <td style="text-align: start;">{{ item.name_service == undefined ? 'ซื้อโปรโมชั่น' : item.name_service }}</td>
+                        <td style="text-align: start;">{{ item.licen }}</td>
                         <td style="text-align: start;">{{ item.name_customer }}</td>
                         <td style="text-align: start;">{{ item.mobile }}</td>
                         <td style="text-align: start;">{{ item.name_admin }}</td>
