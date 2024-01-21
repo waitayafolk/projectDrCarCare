@@ -10,5 +10,5 @@ COPY /build /myweb/
 # production environment
 FROM nginx:stable-alpine
 COPY --from=build /myweb/ /usr/share/nginx/html
-EXPOSE 80 8080
+EXPOSE 80 443 8080 
 CMD ["nginx", "-g", "daemon off;"]
