@@ -43,7 +43,7 @@ services:
     restart: unless-stopped
     entrypoint: /bin/sh -c "trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;"
     depends_on:
-      - carcare_web_frontend
+      - carcare_web
     command: "certonly --webroot --webroot-path=/usr/share/nginx/html --email folkafterme67@gmail.com --agree-tos --no-eff-email --staging -d careubon.com  -d careubon.com" 
 
 volumes:
