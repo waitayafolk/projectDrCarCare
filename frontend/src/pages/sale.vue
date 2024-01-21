@@ -405,29 +405,6 @@
                         <td style="text-align: center;">
                             {{ thaiDateNotime(item.created_date) }}
                         </td>
-                        <!-- <td style="text-align: center;">
-                            <tr>
-                                <th style="text-align: center;">
-                                    
-                                </th>
-                                <th style="text-align: center;">
-                                   
-                                </th>
-                                <th style="text-align: center;">
-                                   
-                                </th>
-                                <th style="text-align: center;">
-                                    
-                                </th>
-                               
-                                <VBtn :disabled="item.percen == 100 ? true : false" size="small" :color="Number(item.percen) < 30 ? 'error' : 'success'" @click="updatePercen(30 , item.id)" block class="mt-1">
-                                    สำเร็จ 30%
-                                </VBtn>
-                               
-                                
-                               
-                            </tr>
-                        </td> -->
                         <td style="text-align: center;">
                             <VBtn :disabled="item.percen == 100 ? true : false" size="small" :color="Number(item.percen) < 100 ? 'error' : 'success'" @click="updatePercen(100 , item.id)" block class="mt-1">
                                 สำเร็จ 100%

@@ -116,8 +116,8 @@ function thaiDateNotime (data){
       month: 'short',
       day: 'numeric',
       // weekday: 'long',
-      // hour: 'numeric',
-      // minute: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
       // second: 'numeric',
   })
   // console.log(result)
@@ -408,7 +408,6 @@ async function handleText(message, replyToken,userId) {
                   WHERE bill.status != 'delete' AND customer_id = $1 
                   Order by bill.id DESC 
       `, [customer.id ])).rows[0]
-      
       if(bill == undefined){
         const message = {
           "type": "flex",
@@ -492,13 +491,13 @@ async function handleText(message, replyToken,userId) {
 
         // console.log(check)
         // return
-        // console.log(date_now)
         // console.log(check)
-        // return
+        // console.log(check.created_date)
+        // return 
         let years = new Date(check.created_date).getFullYear()
         let month = String(new Date(check.created_date).getMonth()+1).padStart(2, '0') 
-        let day = String(new Date(check.created_date).getDate()).padStart(2, '0') 
-        let hours = String(new Date(check.created_date).getHours()).padStart(2, '0') 
+        let day = String(new Date(check.created_date).getDate(check.created_date)).padStart(2, '0') 
+        let hours = String(new Date(check.created_date).getHours()+7).padStart(2, '0') 
         let minute = String(new Date(check.created_date).getMinutes()).padStart(2, '0') 
         let finitdate = `${years}-${month}-${day} ${hours}:${minute}`
         let image = null 
@@ -558,7 +557,7 @@ async function handleText(message, replyToken,userId) {
                   "contents": [
                     {
                       "type": "text",
-                      "text": "เวลาประมาณล้างเสร็จ",
+                      "text": "วันเวลาใช้บริการ",
                       "size": "sm"
                     },
                     {
@@ -667,16 +666,16 @@ async function handleText(message, replyToken,userId) {
                       }
                   ]
                 },
-                {
-                  "type": "button",
-                    "action": {
-                      "type": "uri",
-                      "label": "บิลค่าบริการ",
-                      "uri": url
-                    },
-                    "style": "primary",
-                    "color": "#E040FB"
-                },
+                // {
+                //   "type": "button",
+                //     "action": {
+                //       "type": "uri",
+                //       "label": "บิลค่าบริการ",
+                //       "uri": url
+                //     },
+                //     "style": "primary",
+                //     "color": "#E040FB"
+                // },
               ]
             },
             "footer": {

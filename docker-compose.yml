@@ -30,7 +30,25 @@ services:
       - 3388:3388
       - 443:443
     env_file: ./frontend/.env
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
 
+
+  certbot:
+    image: certbot/certbot
+    networks:
+      - nginx-tier
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    restart: unless-stopped
+    entrypoint: /bin/sh -c "trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;"
+    depends_on:
+      - carcare_web_frontend
+    command: "certonly --webroot --webroot-path=/usr/share/nginx/html --email folkafterme67@gmail.com --agree-tos --no-eff-email --staging -d careubon.com  -d careubon.com" 
+
+volumes:
+  certbot-etc:
+  certbot-var:
 #   db:
 #     image: postgres
 #     container_name: local_pgdb
