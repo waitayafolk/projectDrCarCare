@@ -36,7 +36,7 @@ services:
   certbot:
     image: certbot/certbot
     networks:
-      - nginx-tier
+      - carcare-network
     volumes:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
